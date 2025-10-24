@@ -1,5 +1,11 @@
-import Message from "@/app/components/message/index.jsx";
+import Message from "@/components/message/index";
+import { cores } from "@/style/index";
+import { View } from "react-native";
 
 export default function Index() {
-  return <Message />;
+  return (
+    <View style={cores.secondary}>
+      <Message />
+    </View>
+  );
 }
