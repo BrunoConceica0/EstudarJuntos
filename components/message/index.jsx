@@ -1,13 +1,13 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+// import { FontAwesome5 } from "@expo/vector-icons";
+import { StyleSheet, View } from "react-native";
+// import NoConversation from "./NoConversation";
 
 export default function Message() {
   return (
     <View style={style.container}>
-      <Image
-        source={require("@/assets/image/icons/diamente.svg")}
-        style={style.icon}
-      />
+      {/* <FontAwesome5 name="star" size={24} color="#FFD43B" />
       <Text style={style.text}>Sistema de Mensagens</Text>
+      <NoConversation /> */}
     </View>
   );
 }
@@ -17,12 +17,11 @@ const style = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F7",
   },
-  icon: {},
   text: {
-    color: "#121212",
+    color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+    marginTop: 10,
   },
 });
