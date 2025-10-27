@@ -23,11 +23,11 @@ const typography = StyleSheet.create({
   textXl: {
     fontFamily: "Roboto-Regular",
     fontSize: 16,
-    color: "#8e8e93",
+    color: "#6c6c6c",
   },
   textXm: {
     fontFamily: "Roboto-Regular",
-    fontSize: 12,
+    fontSize: 14,
     color: "#8e8e93",
   },
 });
