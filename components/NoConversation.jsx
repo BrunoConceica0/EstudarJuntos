@@ -19,7 +19,6 @@ const style = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     height: "100vh",
-    marginTop: 700,
   },
   img: {
     width: 64,
