@@ -1,12 +1,20 @@
-import { cores } from "@/style/index";
+import { StyleSheet, View } from "react-native";
 import Message from "@/views/message/Message";
-
-import { View } from "react-native";
 
 export default function Index() {
   return (
-    <View style={cores.bg}>
+    <View style={styles.content}>
       <Message />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F8F9FA",
+  },
+  content: {
+    flex: 1,
+  },
+});

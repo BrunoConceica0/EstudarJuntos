@@ -1,4 +1,4 @@
-import IMessage from "@/interfaces/IMessage"; // Ajuste o caminho conforme necessário
+import IMessage from "@/interfaces/IMessage";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useCallback, useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
@@ -8,7 +8,6 @@ export default function Chat() {
   const [messages, setMessages] = useState<IMessage[]>([]);
 
   useEffect(() => {
-    // Mensagens de exemplo
     setMessages([
       {
         _id: 1,
@@ -42,53 +41,84 @@ export default function Chat() {
 
   // Customizar a barra de input
   const renderInputToolbar = (props: any) => {
-    return <InputToolbar {...props} containerStyle={styles.inputToolbar} />;
+    return (
+      <InputToolbar
+        {...props}
+        containerStyle={styles.inputToolbar}
+        primaryStyle={styles.inputPrimary}
+      />
+    );
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={90}
-    >
-      <GiftedChat
-        messages={messages}
-        onSend={onSend}
-        user={{
-          _id: 1,
-        }}
-        placeholder="Digite uma mensagem..."
-        alwaysShowSend
-        showUserAvatar
-        renderSend={renderSend}
-        renderInputToolbar={renderInputToolbar}
-        renderUsernameOnMessage={true}
-        locale="pt-br"
-        dateFormat="DD/MM/YYYY"
-        timeFormat="HH:mm"
-        maxComposerHeight={100}
-        minComposerHeight={40}
-      />
-    </KeyboardAvoidingView>
+    <View style={styles.wrapper}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+      >
+        <GiftedChat
+          messages={messages}
+          onSend={onSend}
+          user={{
+            _id: 1,
+            name: "Você",
+            avatar: "https://placeimg.com/140/140/any",
+          }}
+          placeholder="Digite uma mensagem..."
+          alwaysShowSend
+          showUserAvatar
+          renderSend={renderSend}
+          renderInputToolbar={renderInputToolbar}
+          renderUsernameOnMessage={true}
+          locale="pt-br"
+          dateFormat="DD/MM/YYYY"
+          timeFormat="HH:mm"
+          maxComposerHeight={100}
+          minComposerHeight={40}
+          messagesContainerStyle={styles.messagesContainer}
+          listViewProps={{ style: styles.listView } as any}
+        />
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  wrapper: {
+    flex: 1,
+    width: "100%",
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  messagesContainer: {
+    paddingBottom: 10,
+  },
+  listView: {
+    flex: 1,
   },
   sendButton: {
     marginRight: 10,
     marginBottom: 5,
     justifyContent: "center",
     alignItems: "center",
+    height: 44,
   },
   inputToolbar: {
     borderTopWidth: 1,
     borderTopColor: "#E8E8E8",
     backgroundColor: "#fff",
     paddingTop: 6,
+    minHeight: 54,
+  },
+  inputPrimary: {
+    alignItems: "center",
   },
   textInput: {
     fontSize: 16,
