@@ -1,10 +1,6 @@
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import index from "../app/index";
-import Create from "../app/Create";
-import Messages from "../app/Messages";
-import Profile from "../app/Profile";
-import Search from "../app/Search";
+import HomeIcon from "../interfaces/ISvg";
 
 export default function TabLayout() {
   return (
@@ -20,24 +16,20 @@ export default function TabLayout() {
           paddingTop: 5,
           height: 60,
         },
-        tabBarShowLabel: true, // MUDE PARA TRUE PARA TESTAR
+        tabBarShowLabel: true,
         headerShown: false,
       }}
     >
       <Tabs.Screen
         name="index"
-        component={index}
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="home" size={28} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <HomeIcon size={28} color={color} />,
         }}
       />
 
       <Tabs.Screen
         name="Search"
-        component={Search}
         options={{
           title: "Search",
           tabBarIcon: ({ color }) => (
@@ -48,7 +40,6 @@ export default function TabLayout() {
 
       <Tabs.Screen
         name="Create"
-        component={Create}
         options={{
           title: "Create",
           tabBarIcon: ({ color }) => (
@@ -59,7 +50,6 @@ export default function TabLayout() {
 
       <Tabs.Screen
         name="Messages"
-        component={Messages}
         options={{
           title: "Messages",
           tabBarIcon: ({ color }) => (
@@ -70,7 +60,6 @@ export default function TabLayout() {
 
       <Tabs.Screen
         name="Profile"
-        componet={Profile}
         options={{
           title: "Profile",
           tabBarIcon: ({ color }) => (

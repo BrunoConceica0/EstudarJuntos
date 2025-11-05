@@ -1,8 +1,8 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Chat from "../../components/chat/index";
+import ListChat from "../../components/chat/ListChat";
 import NoConversation from "../../components/NoConversation";
-import Chat from "./chat/index";
-import ListChat from "./chat/ListChat";
 
 export default function Message() {
   const isConversation = false;

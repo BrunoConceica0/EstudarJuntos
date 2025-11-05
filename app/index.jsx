@@ -1,4 +1,4 @@
-import LoadingScreen from "@/views/log/loadingScreen";
+import LoadingScreen from "@/components/Rollingborder";
 import Message from "@/views/message/Message";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";

@@ -12,6 +12,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "app/index.jsx",
-    "views/message/chat/index.tsx"
+    "components/chat/index.tsx"
   ]
 }
