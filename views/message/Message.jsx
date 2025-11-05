@@ -1,16 +1,29 @@
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import NoConversation from "../../components/NoConversation";
 import Chat from "./chat/index";
 import ListChat from "./chat/ListChat";
 
 export default function Message() {
-  const isConversation = true; //false quando não tiver conversa
+  const isConversation = false;
 
   return (
-    <View style={style.container}>
-      <ListChat />
-      {isConversation ? <Chat /> : <NoConversation />}
-    </View>
+    <SafeAreaView style={style.container} edges={["top", "left", "right"]}>
+      {/* Lista de chats COM SCROLL se necessário */}
+      <View style={style.listContainer}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 0 }}
+        >
+          <ListChat />
+        </ScrollView>
+      </View>
+
+      {/* Chat ocupa o resto */}
+      <View style={style.chatContainer}>
+        {isConversation ? <Chat /> : <NoConversation />}
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -19,5 +32,14 @@ const style = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8F9FA",
     width: "100%",
+  },
+  listContainer: {
+    maxHeight: 200, // Usa maxHeight para permitir altura dinâmica até o limite
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E5E5",
+  },
+  chatContainer: {
+    flex: 1,
   },
 });

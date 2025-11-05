@@ -1,6 +1,5 @@
-// app/(tabs)/_layout.jsx
-import { Tabs } from "expo-router";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
 
 export default function TabLayout() {
   return (
@@ -16,14 +15,15 @@ export default function TabLayout() {
           paddingTop: 5,
           height: 60,
         },
-        tabBarShowLabel: false,
+        tabBarShowLabel: true, // MUDE PARA TRUE PARA TESTAR
         headerShown: false,
       }}
     >
       <Tabs.Screen
-        name="home"
+        name="index"
         options={{
-          tabBarIcon: ({ color, size }) => (
+          title: "Home",
+          tabBarIcon: ({ color }) => (
             <MaterialIcons name="home" size={28} color={color} />
           ),
         }}
@@ -32,7 +32,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          tabBarIcon: ({ color, size }) => (
+          title: "Search",
+          tabBarIcon: ({ color }) => (
             <Ionicons name="search" size={28} color={color} />
           ),
         }}
@@ -41,7 +42,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="create"
         options={{
-          tabBarIcon: ({ color, size }) => (
+          title: "Create",
+          tabBarIcon: ({ color }) => (
             <Ionicons name="add-circle" size={32} color={color} />
           ),
         }}
@@ -50,7 +52,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="messages"
         options={{
-          tabBarIcon: ({ color, size }) => (
+          title: "Messages",
+          tabBarIcon: ({ color }) => (
             <Ionicons name="chatbubble-outline" size={28} color={color} />
           ),
         }}
@@ -59,7 +62,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          tabBarIcon: ({ color, size }) => (
+          title: "Profile",
+          tabBarIcon: ({ color }) => (
             <Ionicons name="person-outline" size={28} color={color} />
           ),
         }}
