@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Chat from "../../components/chat/index";
@@ -5,7 +6,9 @@ import ListChat from "../../components/chat/ListChat";
 import NoConversation from "../../components/NoConversation";
 
 export default function Message() {
-  const isConversation = false;
+  const params = useLocalSearchParams;
+  const isConversation =
+    params.isConversation === "true" || params.isConversation === true;
 
   return (
     <SafeAreaView style={style.container} edges={["top", "left", "right"]}>
