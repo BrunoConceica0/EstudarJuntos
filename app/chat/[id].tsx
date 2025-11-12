@@ -1,3 +1,5 @@
+import ModalDelivery from "@/components/ModalDelive";
+import IDeliveryData from "@/interfaces/IDeliverData";
 import IMessage from "@/interfaces/IMessage";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -17,15 +19,13 @@ export default function ChatScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
   const [messages, setMessages] = useState<IMessage[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  // Extrair informações do usuário dos parâmetros
   const chatId = params.id || "1";
   const chatName = params.name || "Usuário";
   const chatAvatar = params.avatar || "https://via.placeholder.com/50";
 
   useEffect(() => {
-    // Carregar mensagens do chat específico
-    // Aqui você buscaria do backend ou AsyncStorage baseado no chatId
     setMessages([
       {
         _id: 1,
@@ -54,8 +54,28 @@ export default function ChatScreen() {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, newMessages)
     );
-    // Aqui você enviaria a mensagem para o backend
   }, []);
+
+  const handleDeliverySubmit = (data: IDeliveryData) => {
+    console.log("Dados da entrega:", data);
+
+    // Adicionar mensagem no chat com os dados da entrega
+    const deliveryMessage = {
+      _id: Math.random().toString(),
+      text: `📍 Proposta de entrega:\n📅 Data: ${data.date.toLocaleDateString(
+        "pt-BR"
+      )}\n⏰ Horário: ${data.time}\n📌 Local: ${data.location}`,
+      createdAt: new Date(),
+      user: {
+        _id: 1,
+        name: "Você",
+        avatar: "https://via.placeholder.com/50",
+      },
+    };
+
+    setMessages((prev) => GiftedChat.append(prev, [deliveryMessage]));
+    setModalVisible(false); // Fecha o modal após enviar
+  };
 
   const renderSend = (props: any) => {
     return (
@@ -77,7 +97,6 @@ export default function ChatScreen() {
     );
   };
 
-  // Header customizado
   const renderHeader = () => (
     <View style={styles.header}>
       <Pressable onPress={() => router.back()} style={styles.backButton}>
@@ -92,11 +111,20 @@ export default function ChatScreen() {
       <Text style={styles.headerName}>{chatName}</Text>
 
       <View style={styles.headerActions}>
-        <Pressable style={styles.headerButton}>
-          <Ionicons name="videocam-outline" size={24} color="#007AFF" />
+        {/* BOTÃO COMBINAR ENTREGA */}
+        <Pressable
+          style={({ pressed }) => [
+            styles.deliveryButton,
+            pressed && styles.deliveryButtonPressed,
+          ]}
+          onPress={() => setModalVisible(true)}
+        >
+          <Ionicons name="location" size={18} color="#fff" />
+          <Text style={styles.deliveryButtonText}>Combinar</Text>
         </Pressable>
+
         <Pressable style={styles.headerButton}>
-          <Ionicons name="call-outline" size={24} color="#007AFF" />
+          <Ionicons name="ellipsis-vertical" size={24} color="#007AFF" />
         </Pressable>
       </View>
     </View>
@@ -134,6 +162,13 @@ export default function ChatScreen() {
           listViewProps={{ style: styles.listView } as any}
         />
       </KeyboardAvoidingView>
+
+      {/* MODAL DE COMBINAR ENTREGA */}
+      <ModalDelivery
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleDeliverySubmit}
+      />
     </View>
   );
 }
@@ -161,6 +196,7 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     marginHorizontal: 10,
+    backgroundColor: "#E5E5E5",
   },
   headerName: {
     flex: 1,
@@ -170,7 +206,34 @@ const styles = StyleSheet.create({
   },
   headerActions: {
     flexDirection: "row",
-    gap: 15,
+    gap: 10,
+    alignItems: "center",
+  },
+  deliveryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#3A7DFF",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 6,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  deliveryButtonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.95 }],
+  },
+  deliveryButtonText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "600",
   },
   headerButton: {
     padding: 5,

@@ -1,4 +1,3 @@
-// typography.js
 import { StyleSheet } from "react-native";
 
 const typography = StyleSheet.create({
@@ -24,6 +23,11 @@ const typography = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     fontSize: 16,
     color: "#6c6c6c",
+  },
+  textXlB: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    color: "#3A7DFF",
   },
   textXm: {
     fontFamily: "Roboto-Regular",
