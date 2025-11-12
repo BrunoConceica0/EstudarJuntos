@@ -1,13 +1,26 @@
-import { typography, utility } from "@/style/index";
-import { Text, View } from "react-native";
-import LoadingScreen from "../../components/Rollingborder";
-const Home = () => {
-  return (
-    <View style={utility.container}>
-      <Text style={typography.title}>Home</Text>
-      <LoadingScreen />
-    </View>
-  );
-};
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-export default Home;
+import HomeScreen from '../../views/screens/home';
+import ExploreScreen from '../../views/screens/estado_padrao';
+
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: { backgroundColor: '#007AFF' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: 'bold' },
+        }}
+      >
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Início' }} />
+        <Stack.Screen name="Explore" component={ExploreScreen} options={{ title: 'Explorar' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
