@@ -1,8 +1,8 @@
 import { useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Chat from "../../components/chat/index";
-import ListChat from "../../components/chat/ListChat";
+import Chat from "./index";
+import ListChat from "./ListChat";
 import NoConversation from "../../components/NoConversation";
 
 export default function Message() {

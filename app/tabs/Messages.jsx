@@ -1,4 +1,4 @@
-import NoConversation from "@/components/NoConversation";
+import NoConversation from "@/components/chat/NoConversation";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import ListChat from "../../components/chat/ListChat";

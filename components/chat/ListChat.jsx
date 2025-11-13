@@ -1,5 +1,5 @@
-import ChatItem from "@/components/ChatItem";
-import NoConversation from "@/components/NoConversation";
+import ChatItem from "@/components/chat/ChatItem";
+import NoConversation from "@/components/chat/NoConversation";
 import { FlatList, StyleSheet, View } from "react-native";
 
 export default function ListChat() {

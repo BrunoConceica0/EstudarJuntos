@@ -1,5 +1,5 @@
-import Button from "@/components/Buttom";
-import Input from "@/components/Input";
+import Button from "@/components/common/Buttom";
+import Input from "@/components/common/Input";
 import FormatDate from "@/hooks/FormatDate";
 import IDeliveryData from "@/interfaces/IDeliverData";
 import IModalDeliveryProps from "@/interfaces/IModalDeliveryProps";
