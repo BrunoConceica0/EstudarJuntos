@@ -1,4 +1,4 @@
-import ModalDelivery from "@/components/ModalDelive";
+import ModalDelivery from "@/components/views/ModalDelive";
 import IDeliveryData from "@/interfaces/IDeliverData";
 import IMessage from "@/interfaces/IMessage";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";

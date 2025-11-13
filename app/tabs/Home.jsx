@@ -1,26 +1,18 @@
-import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-import HomeScreen from '../../views/screens/home';
-import ExploreScreen from '../../views/screens/estado_padrao';
-
-const Stack = createNativeStackNavigator();
-
-export default function App() {
+import { StyleSheet, View } from "react-native";
+import Home from "../screens/home";
+export default function Profile() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          headerStyle: { backgroundColor: '#007AFF' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: 'bold' },
-        }}
-      >
-        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Início' }} />
-        <Stack.Screen name="Explore" component={ExploreScreen} options={{ title: 'Explorar' }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={styles.container}>
+      <Home />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F8F9FA",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
