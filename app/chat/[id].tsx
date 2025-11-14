@@ -13,56 +13,117 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert,
 } from "react-native";
 import { GiftedChat, InputToolbar, Send } from "react-native-gifted-chat";
+
+// 🔥 FIREBASE IMPORTS
+import {
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+  doc,
+  setDoc,
+} from "firebase/firestore";
+import { db } from "@/src/config/firebase";
 
 export default function ChatScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const chatId = params.id || "1";
   const chatName = params.name || "Usuário";
   const chatAvatar = params.avatar || "https://via.placeholder.com/50";
 
+  // 🔥 TEMPO REAL: Carregar mensagens do Firebase
   useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: "Olá! Vi que você tem o livro 'Dom Casmurro' disponível.",
-        createdAt: new Date(2024, 10, 10, 12, 0),
-        user: {
-          _id: 2,
-          name: chatName as string,
-          avatar: chatAvatar as string,
-        },
+    const messagesRef = collection(db, `chats/${chatId}/messages`);
+    const q = query(messagesRef, orderBy("createdAt", "desc"));
+
+    // Listener em tempo real - atualiza automaticamente quando há novas mensagens
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const firebaseMessages = snapshot.docs.map((doc) => {
+          const data = doc.data();
+
+          // Converter timestamp do Firebase para Date
+          const createdAt = data.createdAt
+            ? data.createdAt.toDate()
+            : new Date();
+
+          return {
+            _id: doc.id,
+            text: data.text,
+            createdAt: createdAt,
+            user: {
+              _id: data.user._id,
+              name: data.user.name,
+              avatar: data.user.avatar,
+            },
+          };
+        });
+
+        setMessages(firebaseMessages);
+        setLoading(false);
       },
-      {
-        _id: 2,
-        text: "Olá! Sim, o livro está disponível. Você está preparando para qual vestibular?",
-        createdAt: new Date(2024, 10, 10, 12, 5),
-        user: {
-          _id: 1,
-          name: "Você",
-          avatar: "https://via.placeholder.com/50",
-        },
-      },
-    ]);
+      (error) => {
+        console.error("Erro ao carregar mensagens:", error);
+        Alert.alert("Erro", "Não foi possível carregar as mensagens.");
+        setLoading(false);
+      }
+    );
+
+    // Cleanup: desinscrever quando o componente for desmontado
+    return () => unsubscribe();
   }, [chatId]);
 
-  const onSend = useCallback((newMessages: IMessage[] = []) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
-    );
-  }, []);
+  const onSend = useCallback(
+    async (newMessages: IMessage[] = []) => {
+      const message = newMessages[0];
 
-  const handleDeliverySubmit = (data: IDeliveryData) => {
+      try {
+        // Adicionar mensagem no Firestore
+        await addDoc(collection(db, `chats/${chatId}/messages`), {
+          text: message.text,
+          createdAt: serverTimestamp(), // Timestamp do servidor
+          user: {
+            _id: 1, // ⚠️ Substituir pelo ID do usuário logado
+            name: "Você",
+            avatar: "https://via.placeholder.com/50",
+          },
+        });
+
+        // Atualizar informações do chat (última mensagem)
+        await setDoc(
+          doc(db, `chats/${chatId}`),
+          {
+            lastMessage: message.text,
+            lastMessageTime: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true } // Merge para não sobrescrever outros campos
+        );
+      } catch (error) {
+        console.error("Erro ao enviar mensagem:", error);
+        Alert.alert("Erro", "Não foi possível enviar a mensagem.");
+      }
+    },
+    [chatId]
+  );
+
+  // 🚚 ENVIAR PROPOSTA DE ENTREGA
+  const handleDeliverySubmit = async (data: IDeliveryData) => {
     console.log("Dados da entrega:", data);
 
     const deliveryMessage = {
-      _id: Math.random().toString(),
-      text: `📍 Proposta de entrega:\n📅 Data: ${data.date.toLocaleDateString(
+      text: `📦 Proposta de entrega:\n📅 Data: ${data.date.toLocaleDateString(
         "pt-BR"
       )}\n⏰ Horário: ${data.time}\n📌 Local: ${data.location}`,
       createdAt: new Date(),
@@ -73,10 +134,29 @@ export default function ChatScreen() {
       },
     };
 
-    setMessages((prev) => GiftedChat.append(prev, [deliveryMessage]));
-    setModalVisible(false);
+    try {
+      // Enviar proposta como mensagem especial
+      await addDoc(collection(db, `chats/${chatId}/messages`), {
+        text: deliveryMessage.text,
+        createdAt: serverTimestamp(),
+        user: deliveryMessage.user,
+        type: "delivery_proposal", // Tipo especial para identificar
+        deliveryData: {
+          date: data.date.toISOString(),
+          time: data.time,
+          location: data.location,
+        },
+      });
+
+      setModalVisible(false);
+      Alert.alert("Sucesso", "Proposta de entrega enviada!");
+    } catch (error) {
+      console.error("Erro ao enviar proposta:", error);
+      Alert.alert("Erro", "Não foi possível enviar a proposta.");
+    }
   };
 
+  // 🎨 CUSTOMIZAR BOTÃO DE ENVIAR
   const renderSend = (props: any) => {
     return (
       <Send {...props}>
@@ -87,6 +167,7 @@ export default function ChatScreen() {
     );
   };
 
+  // 🎨 CUSTOMIZAR BARRA DE INPUT
   const renderInputToolbar = (props: any) => {
     return (
       <InputToolbar
@@ -97,6 +178,7 @@ export default function ChatScreen() {
     );
   };
 
+  // 📱 HEADER CUSTOMIZADO
   const renderHeader = () => (
     <View style={styles.header}>
       <Pressable onPress={() => router.back()} style={styles.backButton}>
@@ -111,6 +193,7 @@ export default function ChatScreen() {
       <Text style={styles.headerName}>{chatName}</Text>
 
       <View style={styles.headerActions}>
+        {/* Botão de combinar entrega */}
         <Pressable
           style={({ pressed }) => [
             styles.deliveryButton,
@@ -122,6 +205,7 @@ export default function ChatScreen() {
           <Text style={styles.deliveryButtonText}>Combinar</Text>
         </Pressable>
 
+        {/* Menu de opções */}
         <Pressable style={styles.headerButton}>
           <Ionicons name="ellipsis-vertical" size={24} color="#007AFF" />
         </Pressable>
@@ -135,14 +219,14 @@ export default function ChatScreen() {
 
       <KeyboardAvoidingView
         style={styles.chatContainer}
-        behavior={Platform.OS === "ios" ? "padding" : undefined} 
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0} 
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
       >
         <GiftedChat
           messages={messages}
           onSend={onSend}
           user={{
-            _id: 1,
+            _id: 1, // ⚠️ Substituir pelo ID do usuário logado
             name: "Você",
             avatar: "https://via.placeholder.com/50",
           }}
@@ -160,9 +244,12 @@ export default function ChatScreen() {
           messagesContainerStyle={styles.messagesContainer}
           listViewProps={{ style: styles.listView } as any}
           bottomOffset={Platform.OS === "ios" ? 40 : 0}
+          isLoadingEarlier={loading}
+          renderAvatarOnTop={true}
         />
       </KeyboardAvoidingView>
 
+      {/* Modal de combinar entrega */}
       <ModalDelivery
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
