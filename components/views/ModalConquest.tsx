@@ -1,14 +1,8 @@
 import React from "react";
 import { Text, Image, View, Modal, StyleSheet, Pressable } from "react-native";
-import Btn from "@/components/common/Buttom";
+import Button from "@/components/common/Buttom";
 import { typography } from "@/style";
-
-interface ModalConquestProps {
-  visible: boolean;
-  onClose: () => void;
-  title?: string;
-  description?: string;
-}
+import ModalConquestProps from "@/interfaces/ModalConquestProps";
 
 export default function ModalConquest({
   visible,
@@ -42,15 +36,12 @@ export default function ModalConquest({
           {/* Conteúdo */}
           <View style={styles.content}>
             <Text style={[typography.subtitle, styles.title]}>{title}</Text>
-
             <Text style={[typography.textXm, styles.description]}>
               {description}
             </Text>
 
-            {/* ✅ Usando seu componente Btn */}
-            <View style={styles.buttonContainer}>
-              <Btn title="Incrível!" onPress={onClose} />
-            </View>
+            {/* Botão */}
+            <Button title="Incrível!" onPress={onClose} />
           </View>
         </Pressable>
       </Pressable>
@@ -61,7 +52,7 @@ export default function ModalConquest({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Fundo escuro semitransparente
     justifyContent: "center",
     alignItems: "center",
   },
@@ -103,10 +94,5 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     marginBottom: 25,
     paddingHorizontal: 10,
-    color: "#333",
-  },
-  buttonContainer: {
-    width: "100%",
-    paddingHorizontal: 20,
   },
 });
