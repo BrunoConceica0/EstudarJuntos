@@ -1,9 +1,12 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
+import ProfileScreen from "../screens/ProfileScreen";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 export default function Profile() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Profile Screen</Text>
-    </View>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <ProfileScreen />
+    </SafeAreaView>
   );
 }
 
@@ -11,11 +14,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8F9FA",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: "bold",
   },
 });

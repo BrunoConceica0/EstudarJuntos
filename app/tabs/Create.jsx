@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
+import BookDonationScreen from "../screens/BookDonationScreen";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Create() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Create Screen</Text>
-    </View>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <BookDonationScreen />
+    </SafeAreaView>
   );
 }
 
@@ -12,11 +14,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8F9FA",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: "bold",
   },
 });

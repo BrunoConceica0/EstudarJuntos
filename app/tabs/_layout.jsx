@@ -31,7 +31,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Search"
         options={{
-          title: "Search",
+          title: "Buscar",
           tabBarIcon: ({ color }) => (
             <Ionicons name="search" size={28} color={color} />
           ),
@@ -41,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Create"
         options={{
-          title: "Create",
+          title: "Doar",
           tabBarIcon: ({ color }) => (
             <Ionicons name="add-circle" size={32} color={color} />
           ),
@@ -51,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Messages"
         options={{
-          title: "Messages",
+          title: "Chat",
           tabBarIcon: ({ color }) => (
             <Ionicons name="chatbubble-outline" size={28} color={color} />
           ),
@@ -61,7 +61,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Profile"
         options={{
-          title: "Profile",
+          title: "Perfil",
           tabBarIcon: ({ color }) => (
             <Ionicons name="person-outline" size={28} color={color} />
           ),
