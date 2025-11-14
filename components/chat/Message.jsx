@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Chat from "./index";
 import ListChat from "./ListChat";
-import NoConversation from "../../components/NoConversation";
+import NoConversation from "@/components/chat/NoConversation";
 
 export default function Message() {
   const params = useLocalSearchParams;
@@ -11,7 +11,7 @@ export default function Message() {
     params.isConversation === "true" || params.isConversation === true;
 
   return (
-    <SafeAreaView style={style.container} edges={["top", "left", "right"]}>
+    <SafeAreaView edges={["top", "left", "right", "bottom"]}>
       {/* Lista de chats COM SCROLL se necessário */}
       <View style={style.listContainer}>
         <ScrollView

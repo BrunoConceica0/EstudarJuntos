@@ -14,7 +14,6 @@ import { cores, typography, utility } from "@/style/index";
 
 const BookIconSource = require("@/assets/image/livro_transparente.png");
 
-// Componente separado para o card de boas-vindas
 const WelcomeCard = ({ userName }) => (
   <View style={styles.topWelcomeCard}>
     <Text style={[typography.subtitle, styles.welcomeTitle]}>
@@ -27,7 +26,7 @@ const WelcomeCard = ({ userName }) => (
   </View>
 );
 
-// Componente separado para o estado vazio
+// Componente do estado vazio
 const EmptyState = () => (
   <View style={styles.noBooksContainer}>
     <Image source={BookIconSource} style={styles.bookIcon} />
@@ -62,7 +61,10 @@ const HomeScreen = () => {
 
   return (
     <View style={[utility.main, styles.androidSafeArea, cores.bg]}>
-      <ScrollView style={utility.main}>
+      <ScrollView
+        style={utility.main}
+        contentContainerStyle={styles.scrollContent} // ✅ Adicionar padding no conteúdo
+      >
         <WelcomeCard userName={userName} />
         <EmptyState />
       </ScrollView>
@@ -75,15 +77,16 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   androidSafeArea: {
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    width: "90%",
   },
-
-  // Card de boas-vindas
+  scrollContent: {
+    paddingBottom: 100, // Espaço para não cobrir o FAB
+  },
   topWelcomeCard: {
     backgroundColor: "#007AFF",
     padding: 20,
     paddingTop: 40,
-    borderRadius: 15,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
     marginBottom: 30,
     elevation: 5,
     shadowColor: "#000",
@@ -100,7 +103,8 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     lineHeight: 22,
     textAlign: "center",
-    paddingBottom: 50,
+    marginTop: 20,
+    marginBottom: 40,
   },
 
   // Estado vazio
@@ -109,7 +113,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 30,
-    marginTop: 200,
+    marginTop: 100, // ✅ Reduzido de 200 para 100
   },
   bookIcon: {
     width: 80,
@@ -126,8 +130,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
   },
-
-  // FAB
   fabButton: {
     position: "absolute",
     width: 60,
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     left: "50%",
     marginLeft: -30,
-    bottom: 50,
+    bottom: Platform.OS === "ios" ? 105 : 90,
     borderRadius: 30,
     elevation: 6,
     shadowColor: "#000",

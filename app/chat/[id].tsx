@@ -4,6 +4,7 @@ import IMessage from "@/interfaces/IMessage";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Image,
   KeyboardAvoidingView,
@@ -59,7 +60,6 @@ export default function ChatScreen() {
   const handleDeliverySubmit = (data: IDeliveryData) => {
     console.log("Dados da entrega:", data);
 
-    // Adicionar mensagem no chat com os dados da entrega
     const deliveryMessage = {
       _id: Math.random().toString(),
       text: `📍 Proposta de entrega:\n📅 Data: ${data.date.toLocaleDateString(
@@ -74,7 +74,7 @@ export default function ChatScreen() {
     };
 
     setMessages((prev) => GiftedChat.append(prev, [deliveryMessage]));
-    setModalVisible(false); // Fecha o modal após enviar
+    setModalVisible(false);
   };
 
   const renderSend = (props: any) => {
@@ -111,7 +111,6 @@ export default function ChatScreen() {
       <Text style={styles.headerName}>{chatName}</Text>
 
       <View style={styles.headerActions}>
-        {/* BOTÃO COMBINAR ENTREGA */}
         <Pressable
           style={({ pressed }) => [
             styles.deliveryButton,
@@ -131,13 +130,13 @@ export default function ChatScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       {renderHeader()}
 
       <KeyboardAvoidingView
         style={styles.chatContainer}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        behavior={Platform.OS === "ios" ? "padding" : undefined} 
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0} 
       >
         <GiftedChat
           messages={messages}
@@ -160,16 +159,16 @@ export default function ChatScreen() {
           minComposerHeight={40}
           messagesContainerStyle={styles.messagesContainer}
           listViewProps={{ style: styles.listView } as any}
+          bottomOffset={Platform.OS === "ios" ? 40 : 0}
         />
       </KeyboardAvoidingView>
 
-      {/* MODAL DE COMBINAR ENTREGA */}
       <ModalDelivery
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onSubmit={handleDeliverySubmit}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -183,7 +182,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
     paddingVertical: 10,
-    paddingTop: Platform.OS === "ios" ? 50 : 10,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#E5E5E5",
@@ -259,6 +257,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#E8E8E8",
     backgroundColor: "#fff",
     paddingTop: 6,
+    paddingBottom: Platform.OS === "ios" ? 10 : 6,
     minHeight: 54,
   },
   inputPrimary: {

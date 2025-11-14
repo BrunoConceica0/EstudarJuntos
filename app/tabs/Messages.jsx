@@ -2,6 +2,7 @@ import NoConversation from "@/components/chat/NoConversation";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import ListChat from "../../components/chat/ListChat";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Message() {
   const [hasConversations, setHasConversations] = useState(true);
@@ -14,9 +15,9 @@ export default function Message() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       {hasConversations ? <ListChat /> : <NoConversation />}
-    </View>
+    </SafeAreaView>
   );
 }
 
