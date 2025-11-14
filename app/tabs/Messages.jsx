@@ -1,6 +1,6 @@
 import NoConversation from "@/components/chat/NoConversation";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import ListChat from "../../components/chat/ListChat";
 import { SafeAreaView } from "react-native-safe-area-context";
 
