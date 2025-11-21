@@ -7,16 +7,34 @@
     "scheme": "estudarjuntos",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "backgroundColor": "#FFFFFF",
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "backgroundColor": "#FFFFFF"
     },
     "android": {
-      "adaptiveIcon": {},
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "backgroundColor": "#FFFFFF",
+      "navigationBar": {
+        "visible": true,
+        "barStyle": "dark-content",
+        "backgroundColor": "#00000000"
+      }
     },
     "web": {
-      "output": "static"
+      "output": "static",
+      "backgroundColor": "#FFFFFF"
     },
     "plugins": [
       [
