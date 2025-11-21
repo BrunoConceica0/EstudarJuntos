@@ -19,7 +19,6 @@ export default function TabLayout() {
           paddingBottom: insets.bottom + 5,
           paddingTop: 5,
           height: 60 + insets.bottom,
-          position: "absolute",
           elevation: 0,
         },
         tabBarShowLabel: true,
