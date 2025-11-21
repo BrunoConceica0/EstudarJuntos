@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import Home from "../screens/home";
+import Home from "@/app/auth/login";
 export default function Profile() {
   return (
     <View style={styles.container}>
