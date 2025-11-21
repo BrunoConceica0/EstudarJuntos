@@ -1,10 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import HomeIcon from "../../components/icons/index";
+import HomeIcon from "@/components/icons/index";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
+      sceneContainerStyle={{ backgroundColor: "transparent" }}
       screenOptions={{
         tabBarActiveTintColor: "#007AFF",
         tabBarInactiveTintColor: "#8E8E93",
@@ -12,9 +16,9 @@ export default function TabLayout() {
           backgroundColor: "#FFFFFF",
           borderTopColor: "#E5E5E5",
           borderTopWidth: 1,
-          paddingBottom: 5,
+          paddingBottom: insets.bottom,
           paddingTop: 5,
-          height: 60,
+          height: 60 + insets.bottom,
         },
         tabBarShowLabel: true,
         headerShown: false,
@@ -27,7 +31,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <HomeIcon size={28} color={color} />,
         }}
       />
-
       <Tabs.Screen
         name="Search"
         options={{
@@ -37,7 +40,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="Create"
         options={{
@@ -47,7 +49,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="Messages"
         options={{
@@ -57,7 +58,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="Profile"
         options={{
