@@ -1,11 +1,11 @@
-import ModalDelivery from "@/components/views/ModalDelive";
+import ModalDelivery from "@/components/views/ModalDelivery";
 import IDeliveryData from "@/interfaces/IDeliverData";
 import IMessage from "@/interfaces/IMessage";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -13,22 +13,22 @@ import {
   StyleSheet,
   Text,
   View,
-  Alert,
 } from "react-native";
 import { GiftedChat, InputToolbar, Send } from "react-native-gifted-chat";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-// 🔥 FIREBASE IMPORTS
+//  FIREBASE IMPORTS
+import { db } from "@/src/config/firebase";
 import {
-  collection,
   addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  serverTimestamp,
+  collection,
   doc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { db } from "@/src/config/firebase";
 
 export default function ChatScreen() {
   const params = useLocalSearchParams();
@@ -41,7 +41,7 @@ export default function ChatScreen() {
   const chatName = params.name || "Usuário";
   const chatAvatar = params.avatar || "https://via.placeholder.com/50";
 
-  // 🔥 TEMPO REAL: Carregar mensagens do Firebase
+  //  TEMPO REAL: Carregar mensagens do Firebase
   useEffect(() => {
     const messagesRef = collection(db, `chats/${chatId}/messages`);
     const q = query(messagesRef, orderBy("createdAt", "desc"));
@@ -92,15 +92,14 @@ export default function ChatScreen() {
         // Adicionar mensagem no Firestore
         await addDoc(collection(db, `chats/${chatId}/messages`), {
           text: message.text,
-          createdAt: serverTimestamp(), // Timestamp do servidor
+          createdAt: serverTimestamp(),
           user: {
-            _id: 1, // ⚠️ Substituir pelo ID do usuário logado
+            _id: 1,
             name: "Você",
             avatar: "https://via.placeholder.com/50",
           },
         });
 
-        // Atualizar informações do chat (última mensagem)
         await setDoc(
           doc(db, `chats/${chatId}`),
           {
@@ -118,7 +117,6 @@ export default function ChatScreen() {
     [chatId]
   );
 
-  // 🚚 ENVIAR PROPOSTA DE ENTREGA
   const handleDeliverySubmit = async (data: IDeliveryData) => {
     console.log("Dados da entrega:", data);
 

@@ -12,7 +12,7 @@ export default function App() {
     async function loadFonts() {
       try {
         await Font.loadAsync({
-          // OpenSans - Variações principais
+          // OpenSans
           "OpenSans-Light": require("./assets/fonts/static/OpenSans-Light.ttf"),
           "OpenSans-Regular": require("./assets/fonts/static/OpenSans-Regular.ttf"),
           "OpenSans-Medium": require("./assets/fonts/static/OpenSans-Medium.ttf"),
@@ -27,7 +27,7 @@ export default function App() {
           "OpenSans-SemiBoldItalic": require("./assets/fonts/static/OpenSans-SemiBoldItalic.ttf"),
           "OpenSans-BoldItalic": require("./assets/fonts/static/OpenSans-BoldItalic.ttf"),
 
-          // Roboto - Variações principais
+          // Roboto
           "Roboto-Thin": require("./assets/fonts/static/Roboto-Thin.ttf"),
           "Roboto-Light": require("./assets/fonts/static/Roboto-Light.ttf"),
           "Roboto-Regular": require("./assets/fonts/static/Roboto-Regular.ttf"),
@@ -41,7 +41,6 @@ export default function App() {
           "Roboto-MediumItalic": require("./assets/fonts/static/Roboto-MediumItalic.ttf"),
           "Roboto-BoldItalic": require("./assets/fonts/static/Roboto-BoldItalic.ttf"),
 
-          // Se quiser usar as versões Condensed também:
           "OpenSans-Condensed-Bold": require("./assets/fonts/static/OpenSans_Condensed-Bold.ttf"),
           "Roboto-Condensed-Bold": require("./assets/fonts/static/Roboto_Condensed-Bold.ttf"),
         });

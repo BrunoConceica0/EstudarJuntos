@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 const utility = StyleSheet.create({
   container: {
@@ -25,8 +25,8 @@ const utility = StyleSheet.create({
     borderColor: "transparent",
   },
   buttonPressed: {
-    opacity: 0.7, // Fica transparente ao tocar
-    transform: [{ scale: 0.98 }], // Diminui um pouco
+    opacity: 0.7,
+    transform: [{ scale: 0.98 }],
     backgroundColor: "#fff",
     borderColor: "#3A7DFF",
     borderWidth: 2,
@@ -37,7 +37,6 @@ const utility = StyleSheet.create({
   },
 
   // modal Entrega
-
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -50,14 +49,18 @@ const utility = StyleSheet.create({
     padding: 24,
     width: "90%",
     maxWidth: 500,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    // Sombra usando elevation para Android e iOS
     elevation: 5,
+    // Para iOS, usa shadowColor separadamente (sem warning no React Native)
+    ...(Platform.OS === "ios" && {
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+    }),
   },
   headerModal: {
     flexDirection: "row",
