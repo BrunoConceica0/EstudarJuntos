@@ -6,10 +6,10 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
+  // TouchableOpacity,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
+// import { useRouter } from "expo-router";
 import { cores, typography, utility } from "@/style/index";
 
 const BookIconSource = require("@/assets/image/livro_transparente.png");
@@ -40,24 +40,24 @@ const EmptyState = () => (
 );
 
 // Componente do FAB (Floating Action Button)
-const FloatingActionButton = ({ onPress }) => (
-  <TouchableOpacity
-    style={[styles.fabButton, cores.primary]}
-    onPress={onPress}
-    activeOpacity={0.8}
-  >
-    <Text style={[cores.btnText, styles.fabText]}>+</Text>
-  </TouchableOpacity>
-);
+// const FloatingActionButton = ({ onPress }) => (
+//   <TouchableOpacity
+//     style={[styles.fabButton, cores.primary]}
+//     onPress={onPress}
+//     activeOpacity={0.8}
+//   >
+//     <Text style={[cores.btnText, styles.fabText]}>+</Text>
+//   </TouchableOpacity>
+// );
 
 // Componente principal
 const HomeScreen = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const userName = "Maria";
 
-  const handleFabPress = () => {
-    router.push("/Explore");
-  };
+  // const handleFabPress = () => {
+  //   router.push("/Explore");
+  // };
 
   return (
     <View style={[utility.main, styles.androidSafeArea, cores.bg]}>
@@ -69,7 +69,7 @@ const HomeScreen = () => {
         <EmptyState />
       </ScrollView>
 
-      <FloatingActionButton onPress={handleFabPress} />
+      {/* <FloatingActionButton onPress={handleFabPress} /> */}
     </View>
   );
 };
