@@ -4,34 +4,48 @@ import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import UserRegistrationForm from "@/components/forms/UserRegistrationFormStep1";
-import UserRegistrationFormStep2 from "@/components/forms/UserRegistrationFormStep2"; // Componente da Etapa 2
+import UserRegistrationFormStep2 from "@/components/forms/UserRegistrationFormStep2";
+import UserRegistrationFormStep2Donor from "@/components/forms/UserRegistrationFormStep2Donor";
+import UserTypeSelection from "@/components/forms/UserTypeSelection";
+import ModalRegisterSuccess from "@/components/forms/ModalRegisterSuccess";
+import ModalRegisterSuccessDonor from "@/components/forms/ModalRegisterSuccessDonor";
 import { typography } from "@/style";
 import { useState } from "react";
-// Importa as tipagens para o estado
 import {
   IStep1Data,
   IFullRegistrationData,
 } from "@/interfaces/IUserRegistrationFormProps";
+import { IFullDonorRegistrationData } from "@/components/forms/UserRegistrationFormStep2Donor";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function RegisterScreen() {
   const router = useRouter();
   const { signUp } = useAuth();
-  const [step, setStep] = useState(1); // 1: Etapa 1 (pessoal), 2: Etapa 2 (perfil)
+
+  // Estados do fluxo
+  const [step, setStep] = useState(1); // 1: dados pessoais, 1.5: escolha tipo, 2: perfil
+  const [userType, setUserType] = useState<"student" | "donor" | null>(null);
   const [step1Data, setStep1Data] = useState<IStep1Data | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [userName, setUserName] = useState("");
 
   // Função chamada pelo UserRegistrationForm.tsx (Etapa 1)
-  const handleNext = (data: IStep1Data) => {
+  const handleStep1Complete = (data: IStep1Data) => {
     setStep1Data(data);
-    setStep(2); // Avança para a Etapa 2
+    setStep(1.5); // Vai para seleção de tipo de usuário
   };
 
-  // Função chamada pelo UserRegistrationFormStep2.tsx (Etapa 2)
-  const handleSubmit = async (data: IFullRegistrationData) => {
+  // Função chamada pela seleção de tipo de usuário
+  const handleUserTypeSelect = (type: "student" | "donor") => {
+    setUserType(type);
+    setStep(2); // Vai para etapa de perfil
+  };
+
+  // Função chamada pelo Step2 do Estudante
+  const handleStudentSubmit = async (data: IFullRegistrationData) => {
     setLoading(true);
     try {
-      // Criar conta no Firebase com todos os dados
       await signUp(data.email, data.password, {
         name: data.name,
         birthDate: data.birthDate,
@@ -40,10 +54,11 @@ export default function RegisterScreen() {
         city: data.city,
         subjects: data.subjects,
         goals: data.goals,
+        userType: "student",
       });
 
-      Alert.alert("Sucesso!", "Conta criada com sucesso!");
-      router.replace("/(tabs)/Home");
+      setUserName(data.name);
+      setShowSuccessModal(true);
     } catch (error: any) {
       Alert.alert(
         "Erro ao criar conta",
@@ -54,49 +69,128 @@ export default function RegisterScreen() {
     }
   };
 
+  // Função chamada pelo Step2 do Doador
+  const handleDonorSubmit = async (data: IFullDonorRegistrationData) => {
+    setLoading(true);
+    try {
+      await signUp(data.email, data.password, {
+        name: data.name,
+        birthDate: data.birthDate,
+        cep: data.cep,
+        address: data.address,
+        donorType: data.donorType,
+        deliveryPreference: data.deliveryPreference,
+        bookTypes: data.bookTypes,
+        userType: "donor",
+      });
+
+      setUserName(data.name);
+      setShowSuccessModal(true);
+    } catch (error: any) {
+      Alert.alert(
+        "Erro ao criar conta",
+        error.message || "Tente novamente mais tarde"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Função chamada quando o modal de sucesso é fechado
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    router.replace("/(tabs)/Home");
+  };
+
   // Função para lidar com o botão 'Voltar'
   const handleBack = () => {
     if (step === 2) {
-      setStep(1); // Volta para a Etapa 1
+      setStep(1.5); // Volta para seleção de tipo
+    } else if (step === 1.5) {
+      setStep(1); // Volta para dados pessoais
     } else {
       router.back(); // Volta para a tela anterior
     }
   };
 
+  // Definir título do header baseado na etapa
+  const getHeaderTitle = () => {
+    if (step === 1) return "Preencha seus dados";
+    if (step === 1.5) return "Escolha seu perfil";
+    if (step === 2 && userType === "student") return "Complete seu perfil";
+    if (step === 2 && userType === "donor") return "Configure seu perfil de doador";
+    return "";
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Pressable onPress={handleBack}>
-            <Text style={styles.backButton}>← Voltar</Text>
-          </Pressable>
-          <Text style={[typography.textXl, styles.subtitle]}>
-            {step === 1 ? "Preencha seus dados" : "Complete seu perfil"}
-          </Text>
-        </View>
+        {step !== 1.5 && (
+          <View style={styles.header}>
+            <Pressable onPress={handleBack}>
+              <Text style={styles.backButton}>← Voltar</Text>
+            </Pressable>
+            <Text style={[typography.textXl, styles.subtitle]}>
+              {getHeaderTitle()}
+            </Text>
+          </View>
+        )}
 
-        {/* Renderização Condicional */}
+        {/* Etapa 1: Dados Pessoais */}
         {step === 1 && (
           <UserRegistrationForm
-            onNext={handleNext}
-            onSubmit={handleSubmit} // Apenas para cumprir o contrato da interface
+            onNext={handleStep1Complete}
+            onSubmit={() => {}} // Não usado neste fluxo
           />
         )}
 
-        {step === 2 && step1Data && (
+        {/* Etapa 1.5: Seleção de Tipo de Usuário */}
+        {step === 1.5 && (
+          <UserTypeSelection onSelect={handleUserTypeSelect} />
+        )}
+
+        {/* Etapa 2: Perfil do Estudante */}
+        {step === 2 && userType === "student" && step1Data && (
           <UserRegistrationFormStep2
             initialData={step1Data}
-            onSubmit={handleSubmit}
+            onSubmit={handleStudentSubmit}
           />
         )}
 
-        <View style={styles.footer}>
-          <Text style={typography.textXm}>Já tem conta? </Text>
-          <Pressable onPress={() => router.push("/auth/login")}>
-            <Text style={[typography.textXm, typography.textXlB]}>Entrar</Text>
-          </Pressable>
-        </View>
+        {/* Etapa 2: Perfil do Doador */}
+        {step === 2 && userType === "donor" && step1Data && (
+          <UserRegistrationFormStep2Donor
+            initialData={step1Data}
+            onSubmit={handleDonorSubmit}
+          />
+        )}
+
+        {step !== 1.5 && (
+          <View style={styles.footer}>
+            <Text style={typography.textXm}>Já tem conta? </Text>
+            <Pressable onPress={() => router.push("/auth/login")}>
+              <Text style={[typography.textXm, typography.textXlB]}>Entrar</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
+
+      {/* Modais de Sucesso */}
+      {userType === "student" && (
+        <ModalRegisterSuccess
+          visible={showSuccessModal}
+          onClose={handleCloseSuccessModal}
+          name={userName}
+        />
+      )}
+
+      {userType === "donor" && (
+        <ModalRegisterSuccessDonor
+          visible={showSuccessModal}
+          onClose={handleCloseSuccessModal}
+          name={userName}
+        />
+      )}
     </SafeAreaView>
   );
 }

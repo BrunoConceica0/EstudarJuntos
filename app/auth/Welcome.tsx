@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { Image, View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import Btn from "@/components/common/Buttom";
@@ -11,8 +11,7 @@ export default function WelcomeScreen() {
     <SafeAreaView style={[styles.container, cores.bg]} edges={["top"]}>
       <View style={styles.content}>
         <View style={styles.logoContainer}>
-          <Text style={styles.logoEmoji}>📚</Text>
-          <Text style={typography.title}>EstudarJuntos</Text>
+          <Image source={require("@/assets/image/logo.png")} />
           <Text style={[typography.textXl, styles.tagline]}>
             A Ponte do Saber conecta você ao seu futuro
           </Text>

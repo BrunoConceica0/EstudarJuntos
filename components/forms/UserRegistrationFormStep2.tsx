@@ -6,7 +6,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TextInput,
   Pressable,
 } from "react-native";
 import Input from "@/components/common/Input";
@@ -49,13 +48,15 @@ export default function UserRegistrationFormStep2({
   onSubmit,
 }: IUserRegistrationFormStep2Props) {
   const [cep, setCep] = useState("");
-  const [state, setState] = useState("SP"); // Valor inicial da imagem
-  const [city, setCity] = useState("São Paulo"); // Valor inicial da imagem
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
-  const [selectedGoals, setSelectedGoals] = useState<string[]>([]); // Selecionados na imagem
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
 
   const [errors, setErrors] = useState({
     cep: "",
+    state: "",
+    city: "",
     subjects: "",
     goals: "",
   });
@@ -74,7 +75,7 @@ export default function UserRegistrationFormStep2({
 
   const validate = () => {
     let isValid = true;
-    const newErrors = { cep: "", subjects: "", goals: "" };
+    const newErrors = { cep: "", state: "", city: "", subjects: "", goals: "" };
 
     // Validação CEP
     const cepRegex = /^\d{5}-\d{3}$/;
@@ -82,7 +83,18 @@ export default function UserRegistrationFormStep2({
       newErrors.cep = "CEP inválido. Use o formato XXXXX-XXX.";
       isValid = false;
     }
-    // Você pode adicionar mais validações aqui (ex: se state/city são preenchidos)
+
+    // Validação Estado
+    if (!state || state.trim().length === 0) {
+      newErrors.state = "Estado é obrigatório.";
+      isValid = false;
+    }
+
+    // Validação Cidade
+    if (!city || city.trim().length === 0) {
+      newErrors.city = "Cidade é obrigatória.";
+      isValid = false;
+    }
 
     // Validação Matérias
     if (selectedSubjects.length === 0) {
@@ -184,22 +196,29 @@ export default function UserRegistrationFormStep2({
       {/* Estado e Cidade */}
       <View style={styles.stateCityContainer}>
         <View style={styles.stateContainer}>
-          <Text style={[typography.textXs, styles.label]}>Estado</Text>
-          {/* Usando TextInput simples, mas em um app real seria um Picker/Dropdown */}
-          <TextInput
-            style={styles.stateInput}
+          <Input
+            label="Estado"
+            placeholder="Ex: SP"
             value={state}
-            onChangeText={setState}
+            onChangeText={(text) => {
+              setState(text.toUpperCase());
+              if (errors.state) setErrors({ ...errors, state: "" });
+            }}
             maxLength={2}
             autoCapitalize="characters"
+            error={errors.state}
           />
         </View>
         <View style={styles.cityContainer}>
-          <Text style={[typography.textXs, styles.label]}>Cidade</Text>
-          <TextInput
-            style={styles.cityInput}
+          <Input
+            label="Cidade"
+            placeholder="Ex: São Paulo"
             value={city}
-            onChangeText={setCity}
+            onChangeText={(text) => {
+              setCity(text);
+              if (errors.city) setErrors({ ...errors, city: "" });
+            }}
+            error={errors.city}
           />
         </View>
       </View>
@@ -271,36 +290,14 @@ const styles = StyleSheet.create({
   },
   stateCityContainer: {
     flexDirection: "row",
-    marginBottom: 24,
-    justifyContent: "space-between",
+    marginBottom: 8,
+    gap: 12,
   },
   stateContainer: {
-    width: "30%",
+    flex: 1,
   },
   cityContainer: {
-    width: "65%",
-  },
-  label: {
-    marginBottom: 8,
-    color: "#343a40",
-  },
-  stateInput: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: "#E9ECEF", // Fundo cinza claro como na imagem
-    justifyContent: "center",
-  },
-  cityInput: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: "#fff", // Fundo branco
-    justifyContent: "center",
+    flex: 2,
   },
   sectionTitle: {
     marginTop: 16,
