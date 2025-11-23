@@ -11,7 +11,7 @@ export default function WelcomeScreen() {
   };
 
   const handleRegister = () => {
-    router.replace("/tabs/Home");
+    router.replace("/Home");
   };
 
   return (

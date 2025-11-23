@@ -29,7 +29,7 @@ export default function RegisterScreen() {
     // data contém todos os dados (Etapa 1 + Etapa 2)
     console.log("Cadastro Finalizado:", data);
     // Lógica final de envio para a API
-    router.replace("/tabs/Home");
+    router.replace("/Home");
   };
 
   // Função para lidar com o botão 'Voltar'
