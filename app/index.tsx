@@ -15,6 +15,6 @@ export default function Index() {
   }
 
   // Se usuário está logado, redireciona para Home
-  // Se não está logado, redireciona para Welcome
-  return <Redirect href={user ? "/(tabs)/Home" : "/auth/Welcome"} />;
+  // Se não está logado, redireciona para Login
+  return <Redirect href={user ? "/(tabs)/Home" : "/auth/login"} />;
 }
