@@ -1,57 +1,129 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router"; // ✅ Usar Expo Router
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 const ProfileScreen = () => {
-  const router = useRouter(); // ✅ Hook do Expo Router
+  const [user, setUser] = useState(null);
+  const navigation = useNavigation();
+
+  // Carregar dados do usuário
+  const loadUser = async () => {
+    try {
+      const savedUser = await AsyncStorage.getItem("user");
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      } else {
+        // Dados para teste - (DEPOIS PRECISAMOS REMOVER)
+        const mockUser = {
+          name: " Bruno",
+          email: "bruno@exemplo.com",
+          booksDonated: 5,
+          booksReceived: 3,
+        };
+        setUser(mockUser);
+        await AsyncStorage.setItem("user", JSON.stringify(mockUser));
+      }
+    } catch (error) {
+      console.log("Erro ao carregar dados do usuário:", error);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadUser();
+    }, [])
+  );
+
+  // Funções para os botões
+  const handleEditProfile = () => {
+    Alert.alert("Editar Perfil", "Funcionalidade em desenvolvimento");
+    // navigation.navigate("EditProfile");
+  };
+
+  const handleMyBooks = () => {
+    Alert.alert("Meus Livros", "Funcionalidade em desenvolvimento");
+    // navigation.navigate("MyBooks");
+  };
+
+  const handleFavorites = () => {
+    Alert.alert("Favoritos", "Funcionalidade em desenvolvimento");
+    // navigation.navigate("Favorites");
+  };
+
+  const handleNotifications = () => {
+    Alert.alert("Notificações", "Funcionalidade em desenvolvimento");
+    // navigation.navigate("Notifications");
+  };
+
+  const handlePrivacy = () => {
+    Alert.alert("Privacidade", "Funcionalidade em desenvolvimento");
+    // navigation.navigate("Privacy");
+  };
+
+  const handleHelp = () => {
+    Alert.alert("Ajuda & Suporte", "Funcionalidade em desenvolvimento");
+    // navigation.navigate("Help");
+  };
+
+  const handleDonateBook = () => {
+    Alert.alert("Doar Livro", "Funcionalidade em desenvolvimento");
+    // navigation.navigate("BookDonation");
+  };
 
   return (
     <View style={styles.container}>
-      {/* Perfil */}
+      {/* HEADER */}
       <View style={styles.profileHeader}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>U</Text>
+          <Text style={styles.avatarText}>
+            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+          </Text>
         </View>
-        <Text style={styles.userName}>Usuário</Text>
-        <Text style={styles.userEmail}>usuario@email.com</Text>
+
+        <Text style={styles.userName}>{user?.name || "Usuário"}</Text>
+        <Text style={styles.userEmail}>
+          {user?.email || "email@exemplo.com"}
+        </Text>
 
         <View style={styles.stats}>
           <View style={styles.stat}>
-            <Text style={styles.statNumber}>5</Text>
+            <Text style={styles.statNumber}>{user?.booksDonated || 0}</Text>
             <Text style={styles.statLabel}>Livros Doados</Text>
           </View>
           <View style={styles.stat}>
-            <Text style={styles.statNumber}>3</Text>
+            <Text style={styles.statNumber}>{user?.booksReceived || 0}</Text>
             <Text style={styles.statLabel}>Livros Recebidos</Text>
           </View>
         </View>
       </View>
 
+      {/* MENU */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Menu de Opções */}
         <View style={styles.menuSection}>
           <Text style={styles.sectionTitle}>Minha Conta</Text>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleEditProfile}>
             <Ionicons name="person-outline" size={22} color="#666" />
             <Text style={styles.menuText}>Editar Perfil</Text>
             <Ionicons name="chevron-forward" size={18} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleMyBooks}>
             <Ionicons name="book-outline" size={22} color="#666" />
             <Text style={styles.menuText}>Meus Livros</Text>
             <Ionicons name="chevron-forward" size={18} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleFavorites}>
             <Ionicons name="heart-outline" size={22} color="#666" />
             <Text style={styles.menuText}>Favoritos</Text>
             <Ionicons name="chevron-forward" size={18} color="#999" />
@@ -61,29 +133,32 @@ const ProfileScreen = () => {
         <View style={styles.menuSection}>
           <Text style={styles.sectionTitle}>Configurações</Text>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={handleNotifications}
+          >
             <Ionicons name="notifications-outline" size={22} color="#666" />
             <Text style={styles.menuText}>Notificações</Text>
             <Ionicons name="chevron-forward" size={18} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handlePrivacy}>
             <Ionicons name="lock-closed-outline" size={22} color="#666" />
             <Text style={styles.menuText}>Privacidade</Text>
             <Ionicons name="chevron-forward" size={18} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleHelp}>
             <Ionicons name="help-circle-outline" size={22} color="#666" />
             <Text style={styles.menuText}>Ajuda & Suporte</Text>
             <Ionicons name="chevron-forward" size={18} color="#999" />
           </TouchableOpacity>
         </View>
 
-        {/* Botão de Doação */}
+        {/* Doar Livro */}
         <TouchableOpacity
           style={styles.donateButton}
-          onPress={() => router.push("/(tabs)/Create")} // ✅ Navegar para aba Create
+          onPress={handleDonateBook}
         >
           <Ionicons name="book" size={20} color="white" />
           <Text style={styles.donateButtonText}>Doar um Livro</Text>
@@ -93,45 +168,43 @@ const ProfileScreen = () => {
   );
 };
 
-// ... resto dos estilos (manter igual)
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f8f9fa",
   },
   profileHeader: {
-    backgroundColor: "#4CAF50",
-    padding: 30,
+    backgroundColor: "#fff",
+    paddingHorizontal: 20,
     paddingTop: 60,
+    paddingBottom: 30,
     alignItems: "center",
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e9ecef",
   },
   avatar: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "white",
+    backgroundColor: "#007bff",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 15,
   },
   avatarText: {
+    color: "#fff",
     fontSize: 32,
     fontWeight: "bold",
-    color: "#4CAF50",
   },
   userName: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "white",
+    color: "#333",
     marginBottom: 5,
   },
   userEmail: {
     fontSize: 16,
-    color: "white",
-    opacity: 0.9,
+    color: "#666",
     marginBottom: 20,
   },
   stats: {
@@ -145,41 +218,42 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "white",
-    marginBottom: 4,
+    color: "#007bff",
   },
   statLabel: {
     fontSize: 14,
-    color: "white",
-    opacity: 0.9,
+    color: "#666",
+    marginTop: 5,
   },
   content: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   menuSection: {
-    backgroundColor: "white",
-    borderRadius: 16,
-    padding: 15,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
     marginBottom: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#2c3e50",
+    fontWeight: "600",
+    color: "#333",
     marginBottom: 15,
-    marginLeft: 5,
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,
-    paddingHorizontal: 5,
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
   },
@@ -187,27 +261,30 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: "#333",
-    marginLeft: 15,
+    marginLeft: 12,
   },
   donateButton: {
-    backgroundColor: "#FF6B35",
+    backgroundColor: "#007bff",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    padding: 18,
+    paddingVertical: 16,
     borderRadius: 12,
-    marginVertical: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: 30,
+    shadowColor: "#007bff",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   donateButtonText: {
-    color: "white",
+    color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
-    marginLeft: 10,
+    fontWeight: "600",
+    marginLeft: 8,
   },
 });
 
