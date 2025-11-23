@@ -13,7 +13,7 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     console.log("Login:", { email, password });
-    router.replace("/tabs/Home");
+    router.replace("/Home");
   };
 
   return (

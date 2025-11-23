@@ -1,7 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { getAuth, initializeAuth } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAwmwUoixFXSMVp1vAwdYXXqCiE5bvwSq4",
@@ -15,8 +16,26 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
-export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage)
-});
+
+// Configurar Auth com persistência apenas para plataformas nativas
+let auth;
+if (Platform.OS === 'web') {
+  // No web, usar getAuth padrão (já tem persistência automática)
+  auth = getAuth(app);
+} else {
+  // No mobile, usar initializeAuth com AsyncStorage
+  try {
+    const { getReactNativePersistence } = require('firebase/auth/react-native');
+    auth = initializeAuth(app, {
+      persistence: getReactNativePersistence(AsyncStorage)
+    });
+  } catch (error) {
+    // Fallback para getAuth se getReactNativePersistence não estiver disponível
+    console.warn('getReactNativePersistence não disponível, usando getAuth padrão');
+    auth = getAuth(app);
+  }
+}
+
+export { auth };
 
 console.log("🔥 Firebase conectado com sucesso!");
