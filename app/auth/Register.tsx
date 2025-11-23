@@ -1,6 +1,6 @@
 // Register.tsx
 
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import UserRegistrationForm from "@/components/forms/UserRegistrationFormStep1";
@@ -12,11 +12,14 @@ import {
   IStep1Data,
   IFullRegistrationData,
 } from "@/interfaces/IUserRegistrationFormProps";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { signUp } = useAuth();
   const [step, setStep] = useState(1); // 1: Etapa 1 (pessoal), 2: Etapa 2 (perfil)
   const [step1Data, setStep1Data] = useState<IStep1Data | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Função chamada pelo UserRegistrationForm.tsx (Etapa 1)
   const handleNext = (data: IStep1Data) => {
@@ -25,11 +28,30 @@ export default function RegisterScreen() {
   };
 
   // Função chamada pelo UserRegistrationFormStep2.tsx (Etapa 2)
-  const handleSubmit = (data: IFullRegistrationData) => {
-    // data contém todos os dados (Etapa 1 + Etapa 2)
-    console.log("Cadastro Finalizado:", data);
-    // Lógica final de envio para a API
-    router.replace("/Home");
+  const handleSubmit = async (data: IFullRegistrationData) => {
+    setLoading(true);
+    try {
+      // Criar conta no Firebase com todos os dados
+      await signUp(data.email, data.password, {
+        name: data.name,
+        birthDate: data.birthDate,
+        cep: data.cep,
+        state: data.state,
+        city: data.city,
+        subjects: data.subjects,
+        goals: data.goals,
+      });
+
+      Alert.alert("Sucesso!", "Conta criada com sucesso!");
+      router.replace("/(tabs)/Home");
+    } catch (error: any) {
+      Alert.alert(
+        "Erro ao criar conta",
+        error.message || "Tente novamente mais tarde"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Função para lidar com o botão 'Voltar'

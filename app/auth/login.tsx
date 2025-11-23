@@ -1,19 +1,37 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import Input from "@/components/common/Input";
 import Btn from "@/components/common/Buttom";
 import { typography } from "@/style";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    console.log("Login:", { email, password });
-    router.replace("/Home");
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Erro", "Por favor, preencha todos os campos");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await signIn(email, password);
+      router.replace("/(tabs)/Home");
+    } catch (error: any) {
+      Alert.alert(
+        "Erro ao fazer login",
+        error.message || "Verifique suas credenciais e tente novamente"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,7 +75,18 @@ export default function LoginScreen() {
             </Text>
           </Pressable>
 
-          <Btn title="Entrar" onPress={handleLogin} />
+          <Btn
+            title={loading ? "Entrando..." : "Entrar"}
+            onPress={handleLogin}
+            disabled={loading}
+          />
+          {loading && (
+            <ActivityIndicator
+              size="small"
+              color="#3A7DFF"
+              style={{ marginTop: 10 }}
+            />
+          )}
         </View>
 
         <View style={styles.footer}>

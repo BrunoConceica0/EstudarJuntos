@@ -34,7 +34,6 @@ export default function UserRegistrationForm({
     password: "",
   });
 
-  // Função para formatar a data
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("pt-BR", {
       year: "numeric",
