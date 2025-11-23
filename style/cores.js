@@ -15,9 +15,12 @@ const cores = StyleSheet.create({
     backgroundColor: "#DC3545",
   },
   warning: { backgroundColor: "#FFC107" },
-  
+
   btnText: {
     color: "#ffffff",
+  },
+  textDecoration: {
+    color: "#3A7DFF",
   },
 });
 

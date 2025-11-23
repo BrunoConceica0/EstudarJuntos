@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import ProfileScreen from "../screens/ProfileScreen";
+// import ProfileScreen from "@/components/forms/ModalRegisterSuccess";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
