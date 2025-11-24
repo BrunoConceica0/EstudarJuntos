@@ -11,6 +11,7 @@ import {
 } from "react-native";
 // import { useRouter } from "expo-router";
 import { cores, typography, utility } from "@/style/index";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BookIconSource = require("@/assets/image/livro_transparente.png");
 
@@ -53,7 +54,8 @@ const EmptyState = () => (
 // Componente principal
 const HomeScreen = () => {
   // const router = useRouter();
-  const userName = "Maria";
+  const { user } = useAuth();
+  const userName = user?.name || "Usuário";
 
   // const handleFabPress = () => {
   //   router.push("/Explore");

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -6,42 +6,17 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Platform,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ProfileScreen = () => {
-  const [user, setUser] = useState(null);
+  const { user, signOut } = useAuth();
   const navigation = useNavigation();
-
-  // Carregar dados do usuário
-  const loadUser = async () => {
-    try {
-      const savedUser = await AsyncStorage.getItem("user");
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
-      } else {
-        // Dados para teste - (DEPOIS PRECISAMOS REMOVER)
-        const mockUser = {
-          name: " Bruno",
-          email: "bruno@exemplo.com",
-          booksDonated: 5,
-          booksReceived: 3,
-        };
-        setUser(mockUser);
-        await AsyncStorage.setItem("user", JSON.stringify(mockUser));
-      }
-    } catch (error) {
-      console.log("Erro ao carregar dados do usuário:", error);
-    }
-  };
-
-  useFocusEffect(
-    React.useCallback(() => {
-      loadUser();
-    }, [])
-  );
+  const router = useRouter();
 
   // Funções para os botões
   const handleEditProfile = () => {
@@ -77,6 +52,45 @@ const ProfileScreen = () => {
   const handleDonateBook = () => {
     Alert.alert("Doar Livro", "Funcionalidade em desenvolvimento");
     // navigation.navigate("BookDonation");
+  };
+
+  const handleLogout = async () => {
+    // No web, Alert.alert não funciona, então usamos window.confirm
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm("Tem certeza que deseja sair?");
+      if (confirmed) {
+        try {
+          await signOut();
+          router.replace("/auth/login");
+        } catch (error) {
+          window.alert("Erro: Não foi possível sair da conta");
+        }
+      }
+    } else {
+      // No mobile (Android/iOS), usamos Alert.alert
+      Alert.alert(
+        "Sair da Conta",
+        "Tem certeza que deseja sair?",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "Sair",
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await signOut();
+                router.replace("/auth/login");
+              } catch (error) {
+                Alert.alert("Erro", "Não foi possível sair da conta");
+              }
+            },
+          },
+        ]
+      );
+    }
   };
 
   return (
@@ -162,6 +176,15 @@ const ProfileScreen = () => {
         >
           <Ionicons name="book" size={20} color="white" />
           <Text style={styles.donateButtonText}>Doar um Livro</Text>
+        </TouchableOpacity>
+
+        {/* Botão de Logout */}
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={handleLogout}
+        >
+          <Ionicons name="log-out-outline" size={20} color="#dc3545" />
+          <Text style={styles.logoutButtonText}>Sair da Conta</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -282,6 +305,23 @@ const styles = StyleSheet.create({
   },
   donateButtonText: {
     color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+    marginLeft: 8,
+  },
+  logoutButton: {
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 16,
+    borderRadius: 12,
+    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: "#dc3545",
+  },
+  logoutButtonText: {
+    color: "#dc3545",
     fontSize: 18,
     fontWeight: "600",
     marginLeft: 8,
