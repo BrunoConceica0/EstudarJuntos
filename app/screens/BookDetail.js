@@ -11,7 +11,6 @@ import {
   Platform,
 } from "react-native";
 
-import MapView, { Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
@@ -168,38 +167,14 @@ export default function BookDetail() {
         </TouchableOpacity>
       </View>
 
-      {/* MAPA */}
-      {Platform.OS !== "web" && book.latitude && book.longitude && (
-        <>
-          <Text style={styles.sectionTitle}>Localização</Text>
-
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: Number(book.latitude),
-              longitude: Number(book.longitude),
-              latitudeDelta: 0.02,
-              longitudeDelta: 0.02,
-            }}
-          >
-            <Marker
-              coordinate={{
-                latitude: Number(book.latitude),
-                longitude: Number(book.longitude),
-              }}
-            />
-          </MapView>
-
-          {/* BOTÃO VOLTAR ABAIXO DO MAPA */}
-          <TouchableOpacity
-            style={styles.backButtonBottom}
-            onPress={() => router.back()}
-          >
-            <MaterialIcons name="arrow-back" size={20} color="#fff" />
-            <Text style={styles.backButtonText}>Voltar</Text>
-          </TouchableOpacity>
-        </>
-      )}
+      {/* BOTÃO VOLTAR */}
+      <TouchableOpacity
+        style={styles.backButtonBottom}
+        onPress={() => router.back()}
+      >
+        <MaterialIcons name="arrow-back" size={20} color="#fff" />
+        <Text style={styles.backButtonText}>Voltar</Text>
+      </TouchableOpacity>
 
       {/* INTERESSADOS */}
       {interestedUsers.length > 0 && (
