@@ -12,26 +12,85 @@ import {
 } from "react-native";
 import BookCard from "@/components/BookCard";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// ===================
+// SUPABASE CONFIG
+// ===================
+const SUPABASE_URL = "https://eqzcchnbhsbxfeuvijwj.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxemNjaG5iaHNieGZldXZpandqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQwMzg5MzgsImV4cCI6MjA3OTYxNDkzOH0.6uDOTs3Q4sUNd_OkmAuI_XOJKeF1Q6br6NJmJAkSu8o";
+const SUPABASE_INSERT_URL = `${SUPABASE_URL}/rest/v1/books`;
 
 const BookDonationScreen = () => {
-  // Estados do formulário
   const [bookTitle, setBookTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [condition, setCondition] = useState("");
   const [description, setDescription] = useState("");
 
-  // Estados da lista
   const [donatedBooks, setDonatedBooks] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
 
-  // Função para salvar/editar livro
-  const handleSaveBook = () => {
+  // ============================
+  // ENVIO PARA O SUPABASE
+  // ============================
+  const enviarLivroSupabase = async (livro) => {
+    try {
+      const usuarioSalvo = await AsyncStorage.getItem("usuario");
+      const usuario = usuarioSalvo ? JSON.parse(usuarioSalvo) : null;
+
+      if (!usuario) {
+        Alert.alert("Erro", "Usuário não encontrado. Faça login novamente.");
+        return false;
+      }
+
+      const livroParaBanco = {
+        title: livro.title,
+        author: livro.author,
+        subject: "Geral",
+        condition: livro.condition,
+        image:
+          "https://eqzcchnbhsbxfeuvijwj.supabase.co/storage/v1/object/public/books/FundamentosFisica.jpg",
+        latitude: -23.5629,
+        longitude: -46.6544,
+        donor_name: usuario.nome,
+        donor_id: usuario.email,
+      };
+
+      const res = await fetch(SUPABASE_INSERT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify(livroParaBanco),
+      });
+
+      if (!res.ok) {
+        const erro = await res.text();
+        console.log("Erro Supabase:", erro);
+        Alert.alert("Erro", "Falha ao salvar no banco 😞");
+        return false;
+      }
+
+      console.log("✅ Livro enviado ao Supabase!");
+      return true;
+
+    } catch (error) {
+      console.log("Erro:", error);
+      Alert.alert("Erro", "Não foi possível conectar ao banco.");
+      return false;
+    }
+  };
+
+  // ============================
+  // SALVAR LIVRO
+  // ============================
+  const handleSaveBook = async () => {
     if (!bookTitle || !author || !condition) {
-      Alert.alert(
-        "Atenção",
-        "Por favor, preencha todos os campos obrigatórios!"
-      );
+      Alert.alert("Atenção", "Preencha todos os campos!");
       return;
     }
 
@@ -46,22 +105,24 @@ const BookDonationScreen = () => {
         : new Date().toLocaleDateString("pt-BR"),
     };
 
+    const enviado = await enviarLivroSupabase(bookData);
+
+    if (!enviado) return;
+
     if (editingBook) {
-      // Editar livro existente
       setDonatedBooks((prevBooks) =>
-        prevBooks.map((book) => (book.id === editingBook.id ? bookData : book))
+        prevBooks.map((book) =>
+          book.id === editingBook.id ? bookData : book
+        )
       );
-      Alert.alert("Sucesso!", `Livro "${bookTitle}" atualizado!`);
     } else {
-      // Adicionar novo livro
       setDonatedBooks((prevBooks) => [bookData, ...prevBooks]);
-      Alert.alert("Sucesso!", `Livro "${bookTitle}" cadastrado para doação!`);
     }
 
+    Alert.alert("Sucesso!", "Livro enviado ao banco com sucesso ✅");
     resetForm();
   };
 
-  // Função para editar livro
   const handleEditBook = (book) => {
     setEditingBook(book);
     setBookTitle(book.title);
@@ -71,14 +132,12 @@ const BookDonationScreen = () => {
     setModalVisible(true);
   };
 
-  // Função para excluir livro
   const handleDeleteBook = (bookId) => {
     setDonatedBooks((prevBooks) =>
       prevBooks.filter((book) => book.id !== bookId)
     );
   };
 
-  // Resetar formulário
   const resetForm = () => {
     setBookTitle("");
     setAuthor("");
@@ -88,13 +147,11 @@ const BookDonationScreen = () => {
     setModalVisible(false);
   };
 
-  // Abrir formulário para novo livro
   const openDonationForm = () => {
     resetForm();
     setModalVisible(true);
   };
 
-  // Renderizar cada item da lista
   const renderBookItem = ({ item }) => (
     <BookCard
       book={item}
@@ -104,8 +161,8 @@ const BookDonationScreen = () => {
           `📖 ${item.title}\n\n✍️ Autor: ${item.author}\n📊 Condição: ${
             item.condition
           }\n${
-            item.description ? `\n📝 Descrição: ${item.description}\n` : ""
-          }\n📅 Cadastrado em: ${item.date}`
+            item.description ? `\n📝 ${item.description}` : ""
+          }\n📅 Data: ${item.date}`
         )
       }
       onEdit={handleEditBook}
@@ -122,46 +179,33 @@ const BookDonationScreen = () => {
         </Text>
       </View>
 
-      {/* Contador Simples */}
       <View style={styles.counterContainer}>
         <Text style={styles.counterText}>
-          {donatedBooks.length}{" "}
-          {donatedBooks.length === 1
-            ? "livro cadastrado"
-            : "livros cadastrados"}
+          {donatedBooks.length} livros cadastrados
         </Text>
       </View>
 
-      {/* Lista de Livros */}
       {donatedBooks.length > 0 ? (
         <FlatList
           data={donatedBooks}
           renderItem={renderBookItem}
           keyExtractor={(item) => item.id}
-          style={styles.bookList}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
         />
       ) : (
         <View style={styles.emptyState}>
           <Text style={styles.emptyStateEmoji}>📖</Text>
-          <Text style={styles.emptyStateTitle}>Nenhum livro cadastrado</Text>
-          <Text style={styles.emptyStateSubtitle}>
-            Toque no botão "+" abaixo para doar seu primeiro livro!
-          </Text>
+          <Text>Nenhum livro cadastrado</Text>
         </View>
       )}
 
-      {/* Botão Flutuante */}
       <TouchableOpacity
         style={styles.floatingButton}
         onPress={openDonationForm}
-        activeOpacity={0.8}
       >
         <Ionicons name="add" size={28} color="white" />
       </TouchableOpacity>
 
-      {/* Formulário */}
+      {/* MODAL */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -170,96 +214,59 @@ const BookDonationScreen = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
-                {editingBook ? "✏️ Editar Livro" : "📚 Doar Livro"}
-              </Text>
-              <TouchableOpacity onPress={resetForm} style={styles.closeButton}>
-                <Ionicons name="close" size={24} color="#666" />
-              </TouchableOpacity>
+            <Text style={styles.modalTitle}>
+              {editingBook ? "Editar Livro" : "Doar Livro"}
+            </Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Título"
+              value={bookTitle}
+              onChangeText={setBookTitle}
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Autor"
+              value={author}
+              onChangeText={setAuthor}
+            />
+
+            <View style={styles.conditionButtons}>
+              {["Novo", "Usado - Ótimo", "Usado - Bom"].map((cond) => (
+                <TouchableOpacity
+                  key={cond}
+                  style={[
+                    styles.conditionButton,
+                    condition === cond && styles.conditionButtonSelected,
+                  ]}
+                  onPress={() => setCondition(cond)}
+                >
+                  <Text>{cond}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
 
-            <ScrollView
-              style={styles.modalBody}
-              showsVerticalScrollIndicator={false}
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="Descrição"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+            />
+
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={handleSaveBook}
             >
-              {/* Formulário Simples */}
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Título do Livro *</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ex: Harry Potter e a Pedra Filosofal"
-                  value={bookTitle}
-                  onChangeText={setBookTitle}
-                />
-              </View>
+              <Text style={styles.saveButtonText}>Salvar</Text>
+            </TouchableOpacity>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Autor *</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ex: J.K. Rowling"
-                  value={author}
-                  onChangeText={setAuthor}
-                />
-              </View>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Condição do Livro *</Text>
-                <View style={styles.conditionButtons}>
-                  {[
-                    "Novo",
-                    "Usado - Ótimo",
-                    "Usado - Bom",
-                    "Usado - Regular",
-                  ].map((cond) => (
-                    <TouchableOpacity
-                      key={cond}
-                      style={[
-                        styles.conditionButton,
-                        condition === cond && styles.conditionButtonSelected,
-                      ]}
-                      onPress={() => setCondition(cond)}
-                    >
-                      <Text
-                        style={[
-                          styles.conditionButtonText,
-                          condition === cond &&
-                            styles.conditionButtonTextSelected,
-                        ]}
-                      >
-                        {cond}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Descrição (opcional)</Text>
-                <TextInput
-                  style={[styles.input, styles.textArea]}
-                  placeholder="Conte um pouco sobre o livro..."
-                  value={description}
-                  onChangeText={setDescription}
-                  multiline
-                  numberOfLines={4}
-                />
-              </View>
-
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={handleSaveBook}
-              >
-                <Text style={styles.saveButtonText}>
-                  {editingBook ? "💾 Salvar Alterações" : "✅ Cadastrar Doação"}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.cancelButton} onPress={resetForm}>
-                <Text style={styles.cancelButtonText}>Cancelar</Text>
-              </TouchableOpacity>
-            </ScrollView>
+            <TouchableOpacity onPress={resetForm}>
+              <Text style={{ textAlign: "center", marginTop: 10 }}>
+                Cancelar
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -267,71 +274,21 @@ const BookDonationScreen = () => {
   );
 };
 
+// ========================= STYLES
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8f9fa",
-  },
+  container: { flex: 1 },
   header: {
     backgroundColor: "#007AFF",
-    padding: 25,
-    paddingTop: 60,
+    padding: 30,
     alignItems: "center",
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "white",
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "white",
-    textAlign: "center",
-    opacity: 0.9,
-  },
-  counterContainer: {
-    padding: 20,
-    paddingBottom: 10,
-  },
-  counterText: {
-    fontSize: 16,
-    color: "#666",
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  bookList: {
-    flex: 1,
-  },
-  listContent: {
-    paddingBottom: 100,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 40,
-    paddingBottom: 100,
-  },
-  emptyStateEmoji: {
-    fontSize: 64,
-    marginBottom: 20,
-  },
-  emptyStateTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  emptyStateSubtitle: {
-    fontSize: 16,
-    color: "#888",
-    textAlign: "center",
-    lineHeight: 22,
-  },
+  title: { fontSize: 26, color: "#fff", fontWeight: "bold" },
+  subtitle: { color: "#fff" },
+  counterContainer: { padding: 15 },
+  counterText: { textAlign: "center" },
+  emptyState: { alignItems: "center", marginTop: 40 },
+  emptyStateEmoji: { fontSize: 60 },
+
   floatingButton: {
     position: "absolute",
     right: 25,
@@ -342,117 +299,58 @@ const styles = StyleSheet.create({
     borderRadius: 32.5,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    zIndex: 1000,
-  },
-  // Estilo
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "flex-end",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: "90%",
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  closeButton: {
-    padding: 4,
-  },
-  modalBody: {
-    padding: 20,
   },
 
-  inputContainer: {
-    marginBottom: 20,
+  modalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-    color: "#333",
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: 10,
+    fontWeight: "bold",
   },
   input: {
-    backgroundColor: "#f8f9fa",
-    padding: 15,
-    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#e9ecef",
-    fontSize: 16,
-    color: "#333",
+    borderColor: "#ddd",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
   },
   textArea: {
-    height: 100,
-    textAlignVertical: "top",
+    height: 80,
   },
   conditionButtons: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
+    marginVertical: 10,
   },
   conditionButton: {
-    backgroundColor: "#f8f9fa",
-    padding: 12,
-    borderRadius: 10,
+    padding: 10,
+    margin: 4,
     borderWidth: 1,
-    borderColor: "#e9ecef",
-    marginBottom: 10,
-    minWidth: "48%",
-    alignItems: "center",
+    borderRadius: 6,
   },
   conditionButtonSelected: {
     backgroundColor: "#4CAF50",
-    borderColor: "#4CAF50",
-  },
-  conditionButtonText: {
-    color: "#666",
-    fontWeight: "500",
-    fontSize: 14,
-  },
-  conditionButtonTextSelected: {
-    color: "white",
-    fontWeight: "bold",
   },
   saveButton: {
-    backgroundColor: "#007AFF",
-    padding: 18,
-    borderRadius: 10,
-    alignItems: "center",
     marginTop: 10,
-    marginBottom: 10,
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 8,
   },
   saveButtonText: {
-    color: "white",
-    fontSize: 18,
+    color: "#fff",
+    textAlign: "center",
     fontWeight: "bold",
-  },
-  cancelButton: {
-    padding: 15,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  cancelButtonText: {
-    color: "#666",
-    fontSize: 16,
-    fontWeight: "500",
   },
 });
 

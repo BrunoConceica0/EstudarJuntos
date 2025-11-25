@@ -8,15 +8,15 @@ import {
   TouchableOpacity,
   Share,
   ActivityIndicator,
-  Platform,
 } from "react-native";
 
 import { MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-// ✅ Backend dinâmico
-const API_URL =
-  Platform.OS === "web" ? "http://localhost:3000" : "http://192.168.1.104:3000"; // depois deixamos isso dinâmico
+// ✅ Supabase
+const SUPABASE_URL = "https://eqzcchnbhsbxfeuvijwj.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxemNjaG5iaHNieGZldXZpandqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQwMzg5MzgsImV4cCI6MjA3OTYxNDkzOH0.6uDOTs3Q4sUNd_OkmAuI_XOJKeF1Q6br6NJmJAkSu8o";
+const API_URL = `${SUPABASE_URL}/rest/v1/books`;
 
 export default function BookDetail() {
   const { bookData, id } = useLocalSearchParams();
@@ -27,34 +27,42 @@ export default function BookDetail() {
   const [similarBooks, setSimilarBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // =========================
+  // BUSCAR LIVRO
+  // =========================
   useEffect(() => {
     const loadBook = async () => {
       try {
+        // Se veio por navegação
         if (bookData) {
-          try {
-            const parsed = JSON.parse(bookData);
-            setBook(parsed);
-            setLoading(false);
-            return;
-          } catch {}
+          const parsed = JSON.parse(bookData);
+          setBook(parsed);
+          setLoading(false);
+          return;
         }
 
+        // Se veio por ID
         if (!id) {
           setBook(null);
           setLoading(false);
           return;
         }
 
-        const res = await fetch(`${API_URL}/books/${id}`);
-
-        if (!res.ok) {
-          setBook(null);
-          setLoading(false);
-          return;
-        }
+        const res = await fetch(`${API_URL}?id=eq.${id}&select=*`, {
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+        });
 
         const data = await res.json();
-        setBook(data);
+
+        if (!Array.isArray(data) || data.length === 0) {
+          setBook(null);
+        } else {
+          setBook(data[0]);
+        }
+
       } catch (error) {
         console.log("❌ Erro ao carregar livro:", error);
         setBook(null);
@@ -66,34 +74,41 @@ export default function BookDetail() {
     loadBook();
   }, [bookData, id]);
 
+  // =========================
+  // LIVROS SEMELHANTES
+  // =========================
   useEffect(() => {
     if (!book) return;
 
-    fetch(`${API_URL}/books/${book.id}/interested`)
-      .then((res) => res.json())
-      .then((data) => setInterestedUsers(data || []))
-      .catch(() => setInterestedUsers([]));
-  }, [book]);
-
-  useEffect(() => {
-    if (!book) return;
-
-    fetch(`${API_URL}/books`)
+    fetch(
+      `${API_URL}?subject=eq.${book.subject}&id=neq.${book.id}&select=*`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
-        const filtered = data.filter(
-          (b) => b.subject === book.subject && b.id !== book.id
-        );
-        setSimilarBooks(filtered);
+        setSimilarBooks(Array.isArray(data) ? data : []);
       })
       .catch(() => setSimilarBooks([]));
+  }, [book]);
+
+  // =========================
+  // INTERESSADOS (mock por enquanto)
+  // =========================
+  useEffect(() => {
+    if (!book) return;
+    setInterestedUsers([]);
   }, [book]);
 
   const handleChat = () => {
     if (!book) return;
 
-    const donorId = book.donorId;
-    const donorName = book.donorName;
+    const donorId = book.donorId || "0";
+    const donorName = book.donorName || "Usuário";
     const avatar = book.image || "https://via.placeholder.com/50";
 
     router.push({
@@ -113,6 +128,10 @@ export default function BookDetail() {
   const handleSolicitar = () => {
     alert("✅ Solicitação enviada para o doador!");
   };
+
+  // =========================
+  // RENDERIZAÇÃO
+  // =========================
 
   if (loading) {
     return (
@@ -146,7 +165,6 @@ export default function BookDetail() {
         <Text style={styles.subject}>{book.subject}</Text>
       </View>
 
-      {/* BOTÕES */}
       <View style={styles.actionRow}>
         <TouchableOpacity
           style={styles.primaryButton}
@@ -167,7 +185,6 @@ export default function BookDetail() {
         </TouchableOpacity>
       </View>
 
-      {/* BOTÃO VOLTAR */}
       <TouchableOpacity
         style={styles.backButtonBottom}
         onPress={() => router.back()}
@@ -176,7 +193,6 @@ export default function BookDetail() {
         <Text style={styles.backButtonText}>Voltar</Text>
       </TouchableOpacity>
 
-      {/* INTERESSADOS */}
       {interestedUsers.length > 0 && (
         <>
           <Text style={styles.sectionTitle}>Interessados</Text>
@@ -190,7 +206,6 @@ export default function BookDetail() {
         </>
       )}
 
-      {/* LIVROS SEMELHANTES */}
       {similarBooks.length > 0 && (
         <>
           <Text style={styles.sectionTitle}>Livros semelhantes</Text>
@@ -217,7 +232,9 @@ export default function BookDetail() {
                 <Text style={styles.similarTitle} numberOfLines={2}>
                   {item.title}
                 </Text>
-                <Text style={styles.similarCondition}>{item.condition}</Text>
+                <Text style={styles.similarCondition}>
+                  {item.condition}
+                </Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -301,12 +318,6 @@ const styles = StyleSheet.create({
   secondaryText: {
     color: "#007AFF",
     marginLeft: 4,
-  },
-
-  map: {
-    height: 200,
-    borderRadius: 10,
-    marginVertical: 10,
   },
 
   backButtonBottom: {

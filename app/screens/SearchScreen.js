@@ -16,13 +16,11 @@ import * as Device from "expo-device";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-// BACKEND DINÂMICO
-const API_URL =
-  Platform.OS === "web"
-    ? "http://localhost:3000"
-    : Device.isDevice
-    ? "http://192.168.1.104:3000"
-    : "http://10.0.2.2:3000";
+
+const SUPABASE_URL = "https://eqzcchnbhsbxfeuvijwj.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxemNjaG5iaHNieGZldXZpandqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQwMzg5MzgsImV4cCI6MjA3OTYxNDkzOH0.6uDOTs3Q4sUNd_OkmAuI_XOJKeF1Q6br6NJmJAkSu8o";
+
+const API_URL = `${SUPABASE_URL}/rest/v1/books`;
 
 // Filtros
 const CONDITIONS = [
@@ -83,23 +81,29 @@ export default function SearchScreen() {
   // =========================
   // BUSCAR LIVROS
   // =========================
-  const fetchBooks = useCallback(async () => {
-    try {
-      setLoading(true);
+ const fetchBooks = useCallback(async () => {
+  try {
+    setLoading(true);
 
-      const res = await fetch(`${API_URL}/books`);
-      const data = await res.json();
+    const res = await fetch(`${API_URL}?select=*`, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
 
-      console.log("📚 Livros recebidos do backend:", data);
+    const data = await res.json();
 
-      setBooks(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("❌ Erro ao buscar livros:", error);
-      setBooks([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    console.log("📚 Livros Supabase:", data);
+
+    setBooks(Array.isArray(data) ? data : []);
+  } catch (error) {
+    console.error("❌ Erro ao buscar livros:", error);
+    setBooks([]);
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   useEffect(() => {
     fetchBooks();
@@ -152,12 +156,11 @@ export default function SearchScreen() {
         if (!book.latitude || !book.longitude) return book;
 
         const distance = getDistance(
-          location.latitude,
-          location.longitude,
-          book.latitude,
-          book.longitude
-        );
-
+  location.latitude,
+  location.longitude,
+  Number(book.latitude),
+  Number(book.longitude)
+);
         return { ...book, distanceKm: distance };
       });
 
