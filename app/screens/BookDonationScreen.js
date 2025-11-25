@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
   },
   header: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#007AFF",
     padding: 25,
     paddingTop: 60,
     alignItems: "center",
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 25,
     bottom: 30,
-    backgroundColor: "#FF6B35",
+    backgroundColor: "#007AFF",
     width: 65,
     height: 65,
     borderRadius: 32.5,
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   saveButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#007AFF",
     padding: 18,
     borderRadius: 10,
     alignItems: "center",
