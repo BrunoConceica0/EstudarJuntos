@@ -122,13 +122,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       if (DEV_MODE) {
         // MODO DE DESENVOLVIMENTO: Salvar usuário no AsyncStorage
-        const users = await getUsersDB();
+        let users = await getUsersDB();
 
-        // Verificar se o email já existe
-        const emailExists = users.some((u) => u.email === email);
-        if (emailExists) {
-          throw new Error("Este email já está cadastrado");
-        }
+        // Remover usuário existente com o mesmo email (para permitir recadastro em fase de teste)
+        users = users.filter((u) => u.email !== email);
 
         // Criar novo usuário
         const newUser: UserData = {

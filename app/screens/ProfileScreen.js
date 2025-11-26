@@ -18,9 +18,8 @@ import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
 const TelaPerfil = () => {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const router = useRouter();
-  const [usuario, setUsuario] = useState(null);
   const [modalVisivel, setModalVisivel] = useState(false);
   const [editandoUsuario, setEditandoUsuario] = useState(null);
   const [meusLivros, setMeusLivros] = useState([]);
@@ -28,29 +27,13 @@ const TelaPerfil = () => {
   const [abaAtiva, setAbaAtiva] = useState("perfil"); // 'perfil', 'meusLivros', 'favoritos'
   const navegacao = useNavigation();
 
-  // Carregar dados do usuário
-  const carregarUsuario = async () => {
-    try {
-      const usuarioSalvo = await AsyncStorage.getItem("usuario");
-      if (usuarioSalvo) {
-        const dadosUsuario = JSON.parse(usuarioSalvo);
-        setUsuario(dadosUsuario);
-        setEditandoUsuario(dadosUsuario);
-      } else {
-        const usuarioExemplo = {
-          nome: "Bruno",
-          email: "bruno@exemplo.com",
-          livrosDoados: 5,
-          livrosRecebidos: 3,
-        };
-        setUsuario(usuarioExemplo);
-        setEditandoUsuario(usuarioExemplo);
-        await AsyncStorage.setItem("usuario", JSON.stringify(usuarioExemplo));
-      }
-    } catch (erro) {
-      console.log("Erro ao carregar dados do usuário:", erro);
-    }
-  };
+  // Debug: Log do usuário
+  useEffect(() => {
+    console.log("=== DEBUG PROFILE SCREEN ===");
+    console.log("Dados do usuário:", user);
+    console.log("Nome:", user?.name);
+    console.log("Email:", user?.email);
+  }, [user]);
 
   // Carregar livros do usuário
   const carregarMeusLivros = async () => {
@@ -112,7 +95,6 @@ const TelaPerfil = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      carregarUsuario();
       carregarMeusLivros();
       carregarFavoritos();
     }, [])
@@ -157,13 +139,16 @@ const TelaPerfil = () => {
 
   // FUNÇÃO EDITAR PERFIL
   const handleEditarPerfil = () => {
+    setEditandoUsuario({
+      nome: user?.name || "",
+      email: user?.email || "",
+    });
     setModalVisivel(true);
   };
 
   const salvarPerfil = async () => {
     try {
-      await AsyncStorage.setItem("usuario", JSON.stringify(editandoUsuario));
-      setUsuario(editandoUsuario);
+      // TODO: Implementar atualização do perfil no AuthContext
       setModalVisivel(false);
       Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
     } catch (erro) {
@@ -339,25 +324,25 @@ const TelaPerfil = () => {
       <View style={estilos.cabecalhoPerfil}>
         <View style={estilos.avatar}>
           <Text style={estilos.textoAvatar}>
-            {usuario?.nome ? usuario.nome.charAt(0).toUpperCase() : "U"}
+            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
           </Text>
         </View>
 
-        <Text style={estilos.nomeUsuario}>{usuario?.nome || "Usuário"}</Text>
+        <Text style={estilos.nomeUsuario}>{user?.name || "Usuário"}</Text>
         <Text style={estilos.emailUsuario}>
-          {usuario?.email || "email@exemplo.com"}
+          {user?.email || "email@exemplo.com"}
         </Text>
 
         <View style={estilos.estatisticas}>
           <View style={estilos.estatistica}>
             <Text style={estilos.numeroEstatistica}>
-              {usuario?.livrosDoados || 0}
+              {user?.booksDonated || 0}
             </Text>
             <Text style={estilos.rotuloEstatistica}>Livros Doados</Text>
           </View>
           <View style={estilos.estatistica}>
             <Text style={estilos.numeroEstatistica}>
-              {usuario?.livrosRecebidos || 0}
+              {user?.booksReceived || 0}
             </Text>
             <Text style={estilos.rotuloEstatistica}>Livros Recebidos</Text>
           </View>
