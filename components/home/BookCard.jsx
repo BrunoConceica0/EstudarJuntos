@@ -4,7 +4,6 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { typography } from "../../style/index";
 
 const BookCard = ({ title, subject, distance, imageSource, onPress }) => {
-  // Mapeamento de cor para cada assunto
   const subjectColorMap = {
     Física: "#28A745",
     Matemática: "#DC3545",
@@ -19,7 +18,6 @@ const BookCard = ({ title, subject, distance, imageSource, onPress }) => {
       onPress={onPress}
       activeOpacity={0.8}
     >
-      {/* Imagem do livro */}
       <View style={styles.gradientEffect}>
         {imageSource && (
           <Image
@@ -30,14 +28,12 @@ const BookCard = ({ title, subject, distance, imageSource, onPress }) => {
         )}
       </View>
 
-      {/* Informações do Livro */}
       <View style={styles.infoContainer}>
         <Text style={[typography.textXs, styles.title]} numberOfLines={2}>
           {title}
         </Text>
 
         <View style={styles.footerRow}>
-          {/* Assunto */}
           <View style={styles.subjectRow}>
             <MaterialCommunityIcons
               name="circle"
@@ -55,7 +51,6 @@ const BookCard = ({ title, subject, distance, imageSource, onPress }) => {
             </Text>
           </View>
 
-          {/* Distância */}
           <View style={styles.distanceRow}>
             <MaterialCommunityIcons
               name="map-marker"

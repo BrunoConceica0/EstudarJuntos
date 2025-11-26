@@ -1,20 +1,12 @@
 // UserRegistrationFormStep2.tsx
 
 import { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import Input from "@/components/common/Input";
 import Btn from "@/components/common/Buttom";
 import { typography } from "@/style";
-// Assumindo que você tem um arquivo de estilo com cores
 
 interface IUserRegistrationFormStep2Props {
-  // Dados da primeira etapa são recebidos como props
   initialData: {
     name: string;
     email: string;
@@ -77,32 +69,27 @@ export default function UserRegistrationFormStep2({
     let isValid = true;
     const newErrors = { cep: "", state: "", city: "", subjects: "", goals: "" };
 
-    // Validação CEP
     const cepRegex = /^\d{5}-\d{3}$/;
     if (!cepRegex.test(cep)) {
       newErrors.cep = "CEP inválido. Use o formato XXXXX-XXX.";
       isValid = false;
     }
 
-    // Validação Estado
     if (!state || state.trim().length === 0) {
       newErrors.state = "Estado é obrigatório.";
       isValid = false;
     }
 
-    // Validação Cidade
     if (!city || city.trim().length === 0) {
       newErrors.city = "Cidade é obrigatória.";
       isValid = false;
     }
 
-    // Validação Matérias
     if (selectedSubjects.length === 0) {
       newErrors.subjects = "Selecione pelo menos uma matéria.";
       isValid = false;
     }
 
-    // Validação Objetivos
     if (selectedGoals.length === 0) {
       newErrors.goals = "Selecione pelo menos um objetivo.";
       isValid = false;
@@ -116,7 +103,7 @@ export default function UserRegistrationFormStep2({
     if (validate()) {
       onSubmit({
         ...initialData,
-        cep: cep.replace("-", ""), // Remover o hífen para o backend
+        cep: cep.replace("-", ""),
         state,
         city,
         subjects: selectedSubjects,
@@ -163,7 +150,6 @@ export default function UserRegistrationFormStep2({
     </Pressable>
   );
 
-  // O componente UserRegistrationFormStep2 deve ser um ScrollView.
   return (
     <ScrollView
       style={styles.container}
@@ -176,8 +162,7 @@ export default function UserRegistrationFormStep2({
         placeholder="00000-000"
         value={cep}
         onChangeText={(text) => {
-          // Lógica básica para adicionar o hífen
-          let formattedText = text.replace(/\D/g, ""); // Remove tudo que não é dígito
+          let formattedText = text.replace(/\D/g, "");
           if (formattedText.length > 5) {
             formattedText =
               formattedText.slice(0, 5) + "-" + formattedText.slice(5, 8);
@@ -187,7 +172,7 @@ export default function UserRegistrationFormStep2({
         }}
         error={errors.cep}
         keyboardType="numeric"
-        maxLength={9} // 5 dígitos + hífen + 3 dígitos
+        maxLength={9}
       />
       <Text style={[typography.textXm, styles.hint]}>
         Para encontrar doadores próximos a você
@@ -264,12 +249,7 @@ export default function UserRegistrationFormStep2({
         <Text style={styles.errorText}>{errors.goals}</Text>
       ) : null}
 
-      {/* Botão de Finalizar */}
-      <Btn
-        title="Finalizar Cadastro"
-        onPress={handleSubmit}
-        // style={styles.finalButton}
-      />
+      <Btn title="Finalizar Cadastro" onPress={handleSubmit} />
     </ScrollView>
   );
 }
@@ -286,7 +266,7 @@ const styles = StyleSheet.create({
     marginTop: -12,
     marginBottom: 24,
     marginLeft: 2,
-    color: "#6c757d", // Cor de texto suave
+    color: "#6c757d",
   },
   stateCityContainer: {
     flexDirection: "row",
@@ -320,7 +300,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
   },
-  // Estilos específicos para as matérias (maioria 2 por linha)
   subjectButton: {
     width: "48%",
     borderColor: "#E0E0E0",
@@ -328,27 +307,23 @@ const styles = StyleSheet.create({
   },
   subjectButtonSelected: {
     borderColor: "#3A7DFF",
-    backgroundColor: "#E6F0FF", // Cor de fundo claro para seleção
+    backgroundColor: "#E6F0FF",
   },
-  // Estilos específicos para os objetivos (tamanho variável)
   goalButton: {
     borderColor: "#E0E0E0",
     backgroundColor: "#fff",
   },
   goalButtonSelected: {
     borderColor: "transparent",
-    backgroundColor: "#3A7DFF", // Cor de fundo azul sólido para objetivo
+    backgroundColor: "#3A7DFF",
   },
-  selectionButtonSelected: {
-    // Geral para todos os selecionados
-  },
+  selectionButtonSelected: {},
   selectionText: {
     color: "#343a40",
   },
   selectionTextSelected: {
-    color: "black", // Cor do texto
+    color: "black",
   },
-  // Checkbox para matérias
   checkbox: {
     width: 14,
     height: 14,

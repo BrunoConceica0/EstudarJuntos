@@ -17,7 +17,6 @@ const UserTypeSelection = ({ onSelect }: UserTypeSelectionProps) => {
       </Text>
 
       <View style={styles.optionsContainer}>
-        {/* Opção Estudante */}
         <Pressable
           style={styles.optionCard}
           onPress={() => onSelect("student")}
@@ -33,11 +32,7 @@ const UserTypeSelection = ({ onSelect }: UserTypeSelectionProps) => {
           </Text>
         </Pressable>
 
-        {/* Opção Doador */}
-        <Pressable
-          style={styles.optionCard}
-          onPress={() => onSelect("donor")}
-        >
+        <Pressable style={styles.optionCard} onPress={() => onSelect("donor")}>
           <View style={[styles.iconContainer, styles.donorIcon]}>
             <Ionicons name="heart-outline" size={40} color="#FF6B35" />
           </View>

@@ -1,6 +1,6 @@
 import { utility } from "@/style/index";
 import { Image, View } from "react-native";
-import Border from "../../components/Rollingborder";
+import Border from "@/components/common/Rollingborder";
 export default function loadingScreen() {
   return (
     <View style={[utility.container, { gap: 75 }]}>

@@ -22,7 +22,6 @@ export default function Message() {
         </ScrollView>
       </View>
 
-      {/* Chat ocupa o resto */}
       <View style={style.chatContainer}>
         {isConversation ? <Chat /> : <NoConversation />}
       </View>
@@ -37,7 +36,7 @@ const style = StyleSheet.create({
     width: "100%",
   },
   listContainer: {
-    maxHeight: 200, // Usa maxHeight para permitir altura dinâmica até o limite
+    maxHeight: 200, 
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#E5E5E5",

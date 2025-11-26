@@ -18,14 +18,11 @@ export default function ChatScreen() {
   const router = useRouter();
   const [messages, setMessages] = useState<IMessage[]>([]);
 
-  // Extrair informações do usuário dos parâmetros
   const chatId = params.id || "1";
   const chatName = params.name || "Usuário";
   const chatAvatar = params.avatar || "https://via.placeholder.com/50";
 
   useEffect(() => {
-    // Carregar mensagens do chat específico
-    // Aqui você buscaria do backend ou AsyncStorage baseado no chatId
     setMessages([
       {
         _id: 1,
@@ -54,7 +51,6 @@ export default function ChatScreen() {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, newMessages)
     );
-    // Aqui você enviaria a mensagem para o backend
   }, []);
 
   const renderSend = (props: any) => {
@@ -77,7 +73,6 @@ export default function ChatScreen() {
     );
   };
 
-  // Header customizado
   const renderHeader = () => (
     <View style={styles.header}>
       <Pressable onPress={() => router.back()} style={styles.backButton}>

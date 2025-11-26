@@ -5,18 +5,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View, StyleSheet, Animated } from "react-native";
 import { useEffect, useRef } from "react";
 
-// Componente customizado para o ícone com círculo animado
 const TabBarIcon = ({ name, color, focused, isHome = false }) => {
   const IconComponent = isHome ? HomeIcon : Ionicons;
   const iconProps = isHome ? { size: 28, color } : { name, size: 28, color };
 
-  // Animação para o círculo
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (focused) {
-      // Animar quando fica ativo
       Animated.parallel([
         Animated.spring(scaleAnim, {
           toValue: 1,
@@ -31,7 +28,6 @@ const TabBarIcon = ({ name, color, focused, isHome = false }) => {
         }),
       ]).start();
     } else {
-      // Animar quando fica inativo
       Animated.parallel([
         Animated.timing(scaleAnim, {
           toValue: 0,

@@ -18,9 +18,9 @@ interface UserData {
   userType?: "student" | "donor";
   address?: string;
   donorType?: "individual" | "institution";
-  cpf?: string; // Para pessoa física
-  cnpj?: string; // Para pessoa jurídica
-  companyName?: string; // Razão social para pessoa jurídica
+  cpf?: string; 
+  cnpj?: string;
+  companyName?: string; 
   deliveryPreference?: "pickup" | "meetup" | "both";
   bookTypes?: string[];
 }
@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Carregar usuário salvo ao iniciar o app
+
   useEffect(() => {
     loadUser();
   }, []);
@@ -78,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  // Função para salvar todos os usuários
+
   const saveUsersDB = async (users: UserData[]) => {
     try {
       await AsyncStorage.setItem(STORAGE_USERS_DB_KEY, JSON.stringify(users));
@@ -90,12 +90,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const signIn = async (email: string, password: string) => {
     try {
       if (DEV_MODE) {
-        // MODO DE DESENVOLVIMENTO: Buscar usuário no AsyncStorage
+
         const users = await getUsersDB();
         const foundUser = users.find((u) => u.email === email);
 
         if (foundUser) {
-          // Login bem-sucedido
           await AsyncStorage.setItem(
             STORAGE_USER_KEY,
             JSON.stringify(foundUser)
@@ -105,7 +104,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           throw new Error("Usuário não encontrado. Crie uma conta primeiro.");
         }
       } else {
-        // MODO PRODUÇÃO: Usar Firebase (quando configurado)
         throw new Error("Firebase não configurado. Use DEV_MODE = true");
       }
     } catch (error: any) {
@@ -121,15 +119,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   ) => {
     try {
       if (DEV_MODE) {
-        // MODO DE DESENVOLVIMENTO: Salvar usuário no AsyncStorage
         let users = await getUsersDB();
 
-        // Remover usuário existente com o mesmo email (para permitir recadastro em fase de teste)
         users = users.filter((u) => u.email !== email);
 
-        // Criar novo usuário
         const newUser: UserData = {
-          uid: Date.now().toString(), // ID único baseado no timestamp
+          uid: Date.now().toString(),
           email,
           name: userData.name || "",
           birthDate: userData.birthDate,
@@ -138,7 +133,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           city: userData.city,
           subjects: userData.subjects || [],
           goals: userData.goals || [],
-          // Campos específicos para doadores
           userType: userData.userType,
           address: userData.address,
           donorType: userData.donorType,
@@ -149,15 +143,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           bookTypes: userData.bookTypes || [],
         };
 
-        // Adicionar ao banco de dados local
         users.push(newUser);
         await saveUsersDB(users);
 
-        // Fazer login automático
         await AsyncStorage.setItem(STORAGE_USER_KEY, JSON.stringify(newUser));
         setUser(newUser);
       } else {
-        // MODO PRODUÇÃO: Usar Firebase (quando configurado)
         throw new Error("Firebase não configurado. Use DEV_MODE = true");
       }
     } catch (error: any) {

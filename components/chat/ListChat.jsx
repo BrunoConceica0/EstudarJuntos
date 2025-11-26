@@ -3,7 +3,6 @@ import NoConversation from "@/components/chat/NoConversation";
 import { FlatList, StyleSheet, View } from "react-native";
 
 export default function ListChat() {
-  // Dados de exemplo - depois você vai buscar de uma API ou contexto
   const conversations = [
     {
       id: 1,
@@ -31,7 +30,6 @@ export default function ListChat() {
     },
   ];
 
-  // Se não tiver conversas, mostra empty state
   if (conversations.length === 0) {
     return <NoConversation />;
   }

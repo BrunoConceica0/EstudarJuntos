@@ -27,7 +27,6 @@ const TelaPerfil = () => {
   const [abaAtiva, setAbaAtiva] = useState("perfil"); // 'perfil', 'meusLivros', 'favoritos'
   const navegacao = useNavigation();
 
-  // Debug: Log do usuário
   useEffect(() => {
     console.log("=== DEBUG PROFILE SCREEN ===");
     console.log("Dados do usuário:", user);
@@ -70,7 +69,6 @@ const TelaPerfil = () => {
     }
   };
 
-  // Carregar favoritos
   const carregarFavoritos = async () => {
     try {
       const favoritosSalvos = await AsyncStorage.getItem("livrosFavoritos");
@@ -103,7 +101,7 @@ const TelaPerfil = () => {
   // FUNÇÃO DE LOGOUT
   const handleSair = async () => {
     // No web, Alert.alert não funciona, então usamos window.confirm
-    if (Platform.OS === 'web') {
+    if (Platform.OS === "web") {
       const confirmed = window.confirm("Tem certeza que deseja sair?");
       if (confirmed) {
         try {

@@ -9,14 +9,16 @@ interface IStep2DonorData {
   cep: string;
   address: string;
   donorType: "individual" | "institution";
-  cpf?: string; // Para pessoa física
-  cnpj?: string; // Para pessoa jurídica
-  companyName?: string; // Razão social para pessoa jurídica
+  cpf?: string;
+  cnpj?: string;
+  companyName?: string;
   deliveryPreference: "pickup" | "meetup" | "both";
   bookTypes: string[];
 }
 
-export interface IFullDonorRegistrationData extends IStep1Data, IStep2DonorData {}
+export interface IFullDonorRegistrationData
+  extends IStep1Data,
+    IStep2DonorData {}
 
 interface UserRegistrationFormStep2DonorProps {
   initialData: IStep1Data;
@@ -29,11 +31,15 @@ const UserRegistrationFormStep2Donor = ({
 }: UserRegistrationFormStep2DonorProps) => {
   const [cep, setCep] = useState("");
   const [address, setAddress] = useState("");
-  const [donorType, setDonorType] = useState<"individual" | "institution">("individual");
+  const [donorType, setDonorType] = useState<"individual" | "institution">(
+    "individual"
+  );
   const [cpf, setCpf] = useState("");
   const [cnpj, setCnpj] = useState("");
   const [companyName, setCompanyName] = useState("");
-  const [deliveryPreference, setDeliveryPreference] = useState<"pickup" | "meetup" | "both">("pickup");
+  const [deliveryPreference, setDeliveryPreference] = useState<
+    "pickup" | "meetup" | "both"
+  >("pickup");
   const [selectedBookTypes, setSelectedBookTypes] = useState<string[]>([]);
 
   const bookTypesOptions = [
@@ -87,7 +93,6 @@ const UserRegistrationFormStep2Donor = ({
         maxLength={9}
       />
 
-      {/* Endereço */}
       <Input
         label="Endereço"
         placeholder="Rua, número, bairro"
@@ -96,7 +101,6 @@ const UserRegistrationFormStep2Donor = ({
         multiline
       />
 
-      {/* Tipo de Doador */}
       <View style={styles.section}>
         <Text style={[typography.textXm, styles.label]}>Tipo de Doador</Text>
         <View style={styles.radioGroup}>
@@ -136,7 +140,6 @@ const UserRegistrationFormStep2Donor = ({
         </View>
       </View>
 
-      {/* Campos específicos para Pessoa Física */}
       {donorType === "individual" && (
         <Input
           label="CPF"
@@ -148,7 +151,6 @@ const UserRegistrationFormStep2Donor = ({
         />
       )}
 
-      {/* Campos específicos para Pessoa Jurídica */}
       {donorType === "institution" && (
         <>
           <Input
@@ -168,7 +170,6 @@ const UserRegistrationFormStep2Donor = ({
         </>
       )}
 
-      {/* Preferências de Entrega */}
       <View style={styles.section}>
         <Text style={[typography.textXm, styles.label]}>
           Preferências de Entrega
@@ -241,7 +242,6 @@ const UserRegistrationFormStep2Donor = ({
         </Pressable>
       </View>
 
-      {/* Tipos de livros que possui */}
       <View style={styles.section}>
         <Text style={[typography.textXm, styles.label]}>
           Tipos de livros que possui (opcional)
@@ -271,7 +271,6 @@ const UserRegistrationFormStep2Donor = ({
         </View>
       </View>
 
-      {/* Botão de envio */}
       <Btn title="Criar Perfil de Doador" onPress={handleSubmit} />
     </ScrollView>
   );

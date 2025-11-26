@@ -1,5 +1,3 @@
-// UserRegistrationForm.tsx
-
 import { useState } from "react";
 import {
   View,
@@ -13,14 +11,13 @@ import Input from "@/components/common/Input";
 import Btn from "@/components/common/Buttom";
 import { typography } from "@/style";
 import DateTimePicker from "@react-native-community/datetimepicker";
-// Importa a interface correta com onNext
 import IUserRegistrationFormProps, {
   IStep1Data,
 } from "@/interfaces/IUserRegistrationFormProps";
 
 export default function UserRegistrationForm({
-  onSubmit, // Não usado aqui, mas mantido para cumprir a interface
-  onNext, // CORREÇÃO: Usar onNext para avançar
+  onSubmit,
+  onNext,
 }: IUserRegistrationFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -74,13 +71,12 @@ export default function UserRegistrationForm({
 
   const handleSubmit = () => {
     if (validate()) {
-      // CORREÇÃO APLICADA: Chama onNext com os dados da Etapa 1
       onNext({
         name: name.trim(),
         email: email.trim().toLowerCase(),
         password,
         birthDate,
-      } as IStep1Data); // Força a tipagem de IStep1Data
+      } as IStep1Data);
     }
   };
 
@@ -90,7 +86,6 @@ export default function UserRegistrationForm({
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* Nome */}
       <Input
         label="Nome Completo"
         placeholder="Seu nome"
@@ -116,7 +111,6 @@ export default function UserRegistrationForm({
         autoCapitalize="none"
       />
 
-      {/* Senha */}
       <Input
         label="Senha"
         placeholder="Mínimo 6 caracteres"
@@ -129,7 +123,6 @@ export default function UserRegistrationForm({
         secureTextEntry
       />
 
-      {/* Data de Nascimento */}
       <View style={styles.inputGroup}>
         <Text style={[typography.textXs, styles.label]}>
           Data de Nascimento
@@ -142,7 +135,6 @@ export default function UserRegistrationForm({
         </Pressable>
       </View>
 
-      {/* DatePicker */}
       {showDatePicker && (
         <DateTimePicker
           value={birthDate}

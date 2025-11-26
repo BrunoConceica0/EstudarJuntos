@@ -4,7 +4,6 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 export default function ChatItem({ chat }) {
   const router = useRouter();
 
-  // Dados de exemplo caso não venha props
   const chatData = chat || {
     id: 1,
     name: "Maria Santos",

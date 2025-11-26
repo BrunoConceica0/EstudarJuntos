@@ -69,7 +69,6 @@ export default function RegisterScreen() {
     }
   };
 
-  // Função chamada pelo Step2 do Doador
   const handleDonorSubmit = async (data: IFullDonorRegistrationData) => {
     setLoading(true);
     try {
@@ -96,29 +95,27 @@ export default function RegisterScreen() {
     }
   };
 
-  // Função chamada quando o modal de sucesso é fechado
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     router.replace("/(tabs)/Home");
   };
 
-  // Função para lidar com o botão 'Voltar'
   const handleBack = () => {
     if (step === 2) {
-      setStep(1.5); // Volta para seleção de tipo
+      setStep(1.5);
     } else if (step === 1.5) {
-      setStep(1); // Volta para dados pessoais
+      setStep(1);
     } else {
-      router.back(); // Volta para a tela anterior
+      router.back();
     }
   };
 
-  // Definir título do header baseado na etapa
   const getHeaderTitle = () => {
     if (step === 1) return "Preencha seus dados";
     if (step === 1.5) return "Escolha seu perfil";
     if (step === 2 && userType === "student") return "Complete seu perfil";
-    if (step === 2 && userType === "donor") return "Configure seu perfil de doador";
+    if (step === 2 && userType === "donor")
+      return "Configure seu perfil de doador";
     return "";
   };
 
@@ -136,7 +133,6 @@ export default function RegisterScreen() {
           </View>
         )}
 
-        {/* Etapa 1: Dados Pessoais */}
         {step === 1 && (
           <UserRegistrationForm
             onNext={handleStep1Complete}
@@ -144,12 +140,8 @@ export default function RegisterScreen() {
           />
         )}
 
-        {/* Etapa 1.5: Seleção de Tipo de Usuário */}
-        {step === 1.5 && (
-          <UserTypeSelection onSelect={handleUserTypeSelect} />
-        )}
+        {step === 1.5 && <UserTypeSelection onSelect={handleUserTypeSelect} />}
 
-        {/* Etapa 2: Perfil do Estudante */}
         {step === 2 && userType === "student" && step1Data && (
           <UserRegistrationFormStep2
             initialData={step1Data}
@@ -157,7 +149,6 @@ export default function RegisterScreen() {
           />
         )}
 
-        {/* Etapa 2: Perfil do Doador */}
         {step === 2 && userType === "donor" && step1Data && (
           <UserRegistrationFormStep2Donor
             initialData={step1Data}
@@ -169,13 +160,14 @@ export default function RegisterScreen() {
           <View style={styles.footer}>
             <Text style={typography.textXm}>Já tem conta? </Text>
             <Pressable onPress={() => router.push("/auth/login")}>
-              <Text style={[typography.textXm, typography.textXlB]}>Entrar</Text>
+              <Text style={[typography.textXm, typography.textXlB]}>
+                Entrar
+              </Text>
             </Pressable>
           </View>
         )}
       </View>
 
-      {/* Modais de Sucesso */}
       {userType === "student" && (
         <ModalRegisterSuccess
           visible={showSuccessModal}
